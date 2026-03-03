@@ -188,6 +188,102 @@ body {
   padding: 0 14px;
 }
 
+.admin-section {
+  max-width: 600px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.admin-container {
+  padding: 30px 20px;
+  background: rgba(255, 215, 0, 0.15);
+  border: 5px solid rgba(255, 215, 0, 0.6);
+  border-radius: 22px;
+  text-align: center;
+}
+
+.admin-container h3 {
+  margin: 0 0 20px;
+  font-size: 24px;
+  color: #ffffff;
+  text-shadow: -1px -1px 0 #ffd900, 1px -1px 0 #ffd900, -1px 1px 0 #ffd900, 3px 3px 0 #ffd900;
+}
+
+.admin-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-controls select {
+  height: 40px;
+  border: 3px solid #ffd900;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #ffd900;
+  font-size: 18px;
+  font-family: "DiceFont", sans-serif;
+  padding: 0 14px;
+}
+
+.btn-admin {
+  background: #ffd900;
+  color: #ffffff;
+  font-size: 18px;
+  height: 40px;
+  padding: 0 20px;
+  width: auto;
+}
+
+.admin-color-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.admin-dice-selector {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.admin-dice-label {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  min-width: 80px;
+  text-align: left;
+}
+
+.admin-dice-selector select {
+  height: 36px;
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1389f6;
+  font-size: 16px;
+  font-family: "DiceFont", sans-serif;
+  padding: 0 12px;
+  min-width: 120px;
+}
+
+.dice-previews {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .dice-preview {
   width: 64px;
   height: 64px;
@@ -391,20 +487,35 @@ body {
 }
 
 @keyframes rolling-dice {
-  0% {
-    transform: rotate(0deg) scale(1);
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
   }
-  25% {
-    transform: rotate(90deg) scale(1.06);
+  10% {
+    transform: translate(-2px, 1px) rotate(-3deg);
+  }
+  20% {
+    transform: translate(2px, -1px) rotate(3deg);
+  }
+  30% {
+    transform: translate(-1px, 2px) rotate(-2deg);
+  }
+  40% {
+    transform: translate(1px, -2px) rotate(2deg);
   }
   50% {
-    transform: rotate(180deg) scale(1);
+    transform: translate(-2px, -1px) rotate(-3deg);
   }
-  75% {
-    transform: rotate(270deg) scale(1.06);
+  60% {
+    transform: translate(2px, 1px) rotate(3deg);
   }
-  100% {
-    transform: rotate(360deg) scale(1);
+  70% {
+    transform: translate(-1px, -1px) rotate(-2deg);
+  }
+  80% {
+    transform: translate(1px, 2px) rotate(2deg);
+  }
+  90% {
+    transform: translate(-2px, 1px) rotate(-3deg);
   }
 }
 

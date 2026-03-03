@@ -1,0 +1,23 @@
+{
+    "name": "color-dice-game",
+    "version": "1.0.0",
+    "description": "A color dice roller game - roll virtual color dice online",
+    "main": "index.html",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node server.js",
+        "dev:all": "node server.js"
+    },
+    "keywords": [
+        "dice",
+        "color",
+        "game",
+        "roller"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^5.2.1",
+        "ws": "^8.19.0"
+    }
+}

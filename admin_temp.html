@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Admin Panel</title>
+    <style>
+        @font-face {
+            font-family: "DiceFont";
+            src: url("./src/assets/fonts/397-font_1.otf") format("opentype");
+            font-display: swap;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "DiceFont", sans-serif;
+            background-image: url("./src/images/background.jpg");
+            background-size: auto;
+            background-position: top left;
+            background-repeat: repeat;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 16px;
+        }
+
+        .admin-container {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: -2px -2px 0 #0a79ea, 2px -2px 0 #0a79ea, -2px 2px 0 #0a79ea, 2px 2px 0 #0a79ea;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #ffffff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 32px;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: rgba(0, 136, 255, 0.45);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            flex-shrink: 0;
+        }
+
+        .status-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #ffffff;
+        }
+
+        .current-rig {
+            font-size: 13px;
+            color: #facc15;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #ffffff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 12px;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .color-btn {
+            position: relative;
+            height: 64px;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: "DiceFont", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            transition: all 0.15s ease;
+        }
+
+        .color-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-btn.selected {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px #fff, 0 4px 16px rgba(255, 255, 255, 0.2);
+        }
+
+        .color-btn[data-color="RED"] {
+            background: #ff3434;
+        }
+
+        .color-btn[data-color="ORANGE"] {
+            background: #ff9f1a;
+        }
+
+        .color-btn[data-color="YELLOW"] {
+            background: #ffe100;
+            color: #333;
+            text-shadow: none;
+        }
+
+        .color-btn[data-color="GREEN"] {
+            background: #008000;
+        }
+
+        .color-btn[data-color="BLUE"] {
+            background: #0049ff;
+        }
+
+        .color-btn[data-color="PURPLE"] {
+            background: #8623ff;
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #818cf8;
+            cursor: pointer;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            height: 48px;
+            border: none;
+            border-radius: 10px;
+            font-family: "DiceFont", sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-apply {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            color: #fff;
+        }
+
+        .btn-apply:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.85);
+            color: #ff3434;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .log {
+            margin-top: 28px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(0, 136, 255, 0.45);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            color: #ffffff;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry .time {
+            color: rgba(255, 255, 255, 0.6);
+            margin-right: 8px;
+        }
+
+        .log-entry .highlight {
+            color: #ffe100;
+            font-weight: 600;
+        }
+
+        .roll-result-section {
+            margin-bottom: 24px;
+        }
+
+        .roll-result-box {
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(0, 136, 255, 0.45);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            text-align: center;
+        }
+
+        .dice-preview-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .admin-dice {
+            width: 64px;
+            height: 64px;
+            border: 5px solid #ffffff;
+            border-radius: 12px;
+            background: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .admin-dice span {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: #ffffff;
+        }
+
+        .roll-result-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: -1px -1px 0 #08f, 1px -1px 0 #08f, -1px 1px 0 #08f, 3px 3px 0 #08f;
+            margin: 0;
+        }
+
+        .roll-result-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 6px;
+        }
+
+        .no-roll-yet {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 20px 0;
+        }
+
+        .dice-count-selector {
+            margin-bottom: 24px;
+        }
+
+        .dice-count-dropdown {
+            width: 100%;
+            height: 44px;
+            border: 3px solid #ffd900;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #ffd900;
+            font-size: 18px;
+            font-family: "DiceFont", sans-serif;
+            padding: 0 14px;
+            cursor: pointer;
+        }
+
+        .selected-dice-display {
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 3px solid rgba(255, 215, 0, 0.6);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .selected-dice-text {
+            font-size: 16px;
+            color: #ffffff;
+            margin-top: 12px;
+            margin-bottom: 0;
+        }
+
+        .individual-color-selectors {
+            margin-top: 20px;
+        }
+
+        .dice-color-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dice-color-label {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: left;
+        }
+
+        .dice-color-select {
+            flex: 1;
+            height: 36px;
+            border: 2px solid #ffffff;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1389f6;
+            font-size: 14px;
+            font-family: "DiceFont", sans-serif;
+            padding: 0 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <h1>🎲 Dice Admin Panel</h1>
+        <p class="subtitle">Control the next dice roll result</p>
+
+        <div class="status-bar">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-text" id="statusText">Connecting...</span>
+            <span class="current-rig" id="currentRig"></span>
+        </div>
+
+        <p class="section-label">LAST ROLL RESULT</p>
+        <div class="roll-result-section">
+            <div class="roll-result-box" id="rollResultBox">
+                <p class="no-roll-yet" id="noRollYet">Waiting for player to roll...</p>
+                <div class="dice-preview-list" id="dicePreviewList" style="display:none;"></div>
+                <p class="roll-result-text" id="rollResultText" style="display:none;"></p>
+                <p class="roll-result-label" id="rollResultLabel" style="display:none;"></p>
+            </div>
+        </div>
+
+        <p class="section-label">Select number of dice</p>
+        <div class="dice-count-selector">
+            <select id="diceCountSelect" class="dice-count-dropdown">
+                <option value="1">1 Die</option>
+                <option value="2">2 Dice</option>
+                <option value="3">3 Dice</option>
+            </select>
+        </div>
+
+        <p class="section-label">Select rigged color</p>
+        <div id="colorSelectionContainer">
+            <div class="color-grid" id="colorGrid">
+                <button class="color-btn" data-color="RED">RED</button>
+                <button class="color-btn" data-color="ORANGE">ORANGE</button>
+                <button class="color-btn" data-color="YELLOW">YELLOW</button>
+                <button class="color-btn" data-color="GREEN">GREEN</button>
+                <button class="color-btn" data-color="BLUE">BLUE</button>
+                <button class="color-btn" data-color="PURPLE">PURPLE</button>
+            </div>
+            <div class="individual-color-selectors" id="individualColorSelectors" style="display: none;">
+                <!-- Individual color selectors will be dynamically added here -->
+            </div>
+        </div>
+
+        <p class="section-label">Reserved dice</p>
+        <div class="selected-dice-display" id="selectedDiceDisplay">
+            <div class="dice-preview-list" id="selectedDiceList"></div>
+            <p class="selected-dice-text" id="selectedDiceText">No reserved dice</p>
+        </div>
+
+        <div class="options">
+            <label class="toggle-label">
+                <input type="checkbox" id="persistToggle">
+                Keep rigged (don't reset after one roll)
+            </label>
+        </div>
+
+        <div class="action-btns">
+            <button class="action-btn btn-apply" id="applyBtn" disabled>APPLY RIG</button>
+            <button class="action-btn btn-clear" id="clearBtn">CLEAR</button>
+        </div>
+
+        <div class="log" id="logContainer">
+            <div class="log-entry"><span class="time">--:--:--</span> Admin panel loaded</div>
+        </div>
+    </div>
+
+    <script>
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const currentRig = document.getElementById('currentRig');
+        const colorGrid = document.getElementById('colorGrid');
+        const colorBtns = colorGrid.querySelectorAll('.color-btn');
+        const persistToggle = document.getElementById('persistToggle');
+        const applyBtn = document.getElementById('applyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const logContainer = document.getElementById('logContainer');
+        const diceCountSelect = document.getElementById('diceCountSelect');
+        const selectedDiceList = document.getElementById('selectedDiceList');
+        const selectedDiceText = document.getElementById('selectedDiceText');
+        const individualColorSelectors = document.getElementById('individualColorSelectors');
+
+        let selectedColor = null;
+        let selectedColors = []; // For multiple dice selection
+        let ws;
+
+        // Color mapping
+        const diceColors = {
+            'RED': '#ff3434',
+            'ORANGE': '#ff9f1a',
+            'YELLOW': '#ffe100',
+            'GREEN': '#008000',
+            'BLUE': '#0049ff',
+            'PURPLE': '#8623ff'
+        };
+
+        function renderIndividualColorSelectors(count) {
+            individualColorSelectors.innerHTML = '';
+            
+            if (count > 1) {
+                // Hide single color grid and show individual selectors
+                colorGrid.style.display = 'none';
+                individualColorSelectors.style.display = 'block';
+                
+                for (let i = 0; i < count; i++) {
+                    const selectorDiv = document.createElement('div');
+                    selectorDiv.className = 'dice-color-selector';
+                    
+                    const label = document.createElement('label');
+                    label.className = 'dice-color-label';
+                    label.textContent = `Die ${i + 1}:`;
+                    
+                    const select = document.createElement('select');
+                    select.className = 'dice-color-select';
+                    select.id = `dice-color-${i}`;
+                    
+                    // Add color options
+                    Object.keys(diceColors).forEach(colorName => {
+                        const option = document.createElement('option');
+                        option.value = colorName;
+                        option.textContent = colorName;
+                        select.appendChild(option);
+                    });
+                    
+                    selectorDiv.appendChild(label);
+                    selectorDiv.appendChild(select);
+                    individualColorSelectors.appendChild(selectorDiv);
+                    
+                    // Add event listener
+                    select.addEventListener('change', updateSelectedDiceDisplay);
+                }
+            } else {
+                // Show single color grid and hide individual selectors
+                colorGrid.style.display = 'grid';
+                individualColorSelectors.style.display = 'none';
+            }
+        }
+
+        function updateReservedDiceDisplay() {
+            // This will be updated to show the queue from server state
+            // For now, show current rigged colors as before
+            if (currentRig.textContent.includes('Rigged:')) {
+                // Extract colors from currentRig text
+                const riggedText = currentRig.textContent.replace('Rigged: ', '').replace(' (persist)', '').replace(' (one-time)', '');
+                const colors = riggedText.split(', ').map(c => c.trim());
+                
+                selectedDiceList.innerHTML = '';
+                colors.forEach(color => {
+                    const dice = document.createElement('div');
+                    dice.className = 'admin-dice';
+                    dice.style.background = diceColors[color];
+                    const dot = document.createElement('span');
+                    dice.appendChild(dot);
+                    selectedDiceList.appendChild(dice);
+                });
+                
+                selectedDiceText.textContent = `${colors.length} ${colors.length === 1 ? 'die' : 'dice'}: ${colors.join(', ')}`;
+            } else {
+                selectedDiceList.innerHTML = '';
+                selectedDiceText.textContent = 'No reserved dice';
+            }
+        }
+
+        function updateReservedQueueDisplay(reservedQueue) {
+            if (reservedQueue && reservedQueue.length > 0) {
+                selectedDiceList.innerHTML = '';
+                
+                // Show all reserved configurations in simple list
+                reservedQueue.forEach((config, index) => {
+                    const queueItem = document.createElement('div');
+                    queueItem.style.marginBottom = '6px';
+                    queueItem.style.padding = '6px';
+                    queueItem.style.background = 'rgba(255, 255, 255, 0.1)';
+                    queueItem.style.borderRadius = '6px';
+                    queueItem.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+                    queueItem.style.fontSize = '14px';
+                    queueItem.style.color = '#ffffff';
+                    queueItem.style.display = 'flex';
+                    queueItem.style.alignItems = 'center';
+                    queueItem.style.gap = '8px';
+                    
+                    // Dice preview
+                    const diceContainer = document.createElement('div');
+                    diceContainer.style.display = 'flex';
+                    diceContainer.style.gap = '4px';
+                    
+                    config.colors.forEach(color => {
+                        const dice = document.createElement('div');
+                        dice.style.width = '24px';
+                        dice.style.height = '24px';
+                        dice.style.border = '2px solid #ffffff';
+                        dice.style.borderRadius = '4px';
+                        dice.style.background = diceColors[color];
+                        diceContainer.appendChild(dice);
+                    });
+                    
+                    // Text
+                    const text = document.createElement('span');
+                    text.textContent = `${config.colors.join(', ')}`;
+                    
+                    queueItem.appendChild(diceContainer);
+                    queueItem.appendChild(text);
+                    selectedDiceList.appendChild(queueItem);
+                });
+                
+                selectedDiceText.textContent = `${reservedQueue.length} reserved configurations`;
+            } else {
+                selectedDiceList.innerHTML = '';
+                selectedDiceText.textContent = 'No reserved dice';
+            }
+        }
+
+        function updateSelectedDiceDisplay() {
+            const diceCount = parseInt(diceCountSelect.value, 10);
+            selectedDiceList.innerHTML = '';
+            
+            if (diceCount === 1 && selectedColor) {
+                // Single die with single color selection
+                for (let i = 0; i < diceCount; i++) {
+                    const dice = document.createElement('div');
+                    dice.className = 'admin-dice';
+                    dice.style.background = diceColors[selectedColor];
+                    const dot = document.createElement('span');
+                    dice.appendChild(dot);
+                    selectedDiceList.appendChild(dice);
+                }
+                
+                selectedDiceText.textContent = `1 die: ${selectedColor}`;
+                applyBtn.disabled = false;
+            } else if (diceCount > 1) {
+                // Multiple dice with individual color selection
+                selectedColors = [];
+                let allSelected = true;
+                
+                for (let i = 0; i < diceCount; i++) {
+                    const select = document.getElementById(`dice-color-${i}`);
+                    if (select && select.value) {
+                        selectedColors.push(select.value);
+                        
+                        const dice = document.createElement('div');
+                        dice.className = 'admin-dice';
+                        dice.style.background = diceColors[select.value];
+                        const dot = document.createElement('span');
+                        dice.appendChild(dot);
+                        selectedDiceList.appendChild(dice);
+                    } else {
+                        allSelected = false;
+                    }
+                }
+                
+                if (allSelected && selectedColors.length === diceCount) {
+                    selectedDiceText.textContent = `${diceCount} dice: ${selectedColors.join(', ')}`;
+                    applyBtn.disabled = false;
+                } else {
+                    selectedDiceText.textContent = 'Please select colors for all dice';
+                    applyBtn.disabled = true;
+                }
+            } else {
+                selectedDiceText.textContent = 'No reserved dice';
+                applyBtn.disabled = true;
+            }
+        }
+
+        diceCountSelect.addEventListener('change', () => {
+            const diceCount = parseInt(diceCountSelect.value, 10);
+            renderIndividualColorSelectors(diceCount);
+            updateSelectedDiceDisplay();
+        });
+
+        function log(text) {
+            const now = new Date();
+            const time = now.toTimeString().slice(0, 8);
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="time">${time}</span> ${text}`;
+            logContainer.prepend(entry);
+        }
+
+        function connect() {
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}`);
+
+            ws.addEventListener('open', () => {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'Connected';
+                log('Connected to server');
+                ws.send(JSON.stringify({ type: 'admin-get-state' }));
+            });
+
+            ws.addEventListener('close', () => {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'Disconnected — retrying...';
+                log('Disconnected. Retrying in 2s...');
+                setTimeout(connect, 2000);
+            });
+
+            ws.addEventListener('message', (event) => {
+                const msg = JSON.parse(event.data);
+
+                if (msg.type === 'admin-state') {
+                    if (msg.riggedColors && msg.riggedColors.length > 0) {
+                        currentRig.textContent = `Rigged: ${msg.riggedColors.join(', ')}${msg.persistRig ? ' (persist)' : ''}`;
+                    } else {
+                        currentRig.textContent = 'Random';
+                    }
+                    
+                    // Update reserved queue display
+                    updateReservedQueueDisplay(msg.reservedQueue || []);
+                }
+
+                if (msg.type === 'roll-broadcast') {
+                    showRollResult(msg.results, msg.count);
+                    const colorNames = msg.results.map(r => r.name).join(', ');
+                    log(`Player rolled ${msg.count} dice → <span class="highlight">${colorNames}</span>`);
+                }
+            });
+        }
+
+        // Color selection
+        colorBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                colorBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedColor = btn.dataset.color;
+                applyBtn.disabled = false;
+                updateSelectedDiceDisplay();
+            });
+        });
+
+        // Apply rig
+        applyBtn.addEventListener('click', () => {
+            const diceCount = parseInt(diceCountSelect.value, 10);
+            let colorsToSend = [];
+            
+            if (diceCount === 1 && selectedColor) {
+                colorsToSend = [selectedColor];
+            } else if (diceCount > 1 && selectedColors.length === diceCount) {
+                colorsToSend = selectedColors;
+            } else {
+                return; // No valid colors selected
+            }
+            
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+            ws.send(JSON.stringify({
+                type: 'admin-set-color',
+                colors: colorsToSend,
+                persist: persistToggle.checked
+            }));
+
+            const colorText = colorsToSend.join(', ');
+            log(`Rigged → <span class="highlight">${colorText}</span>${persistToggle.checked ? ' (persistent)' : ' (one-time)'}`);
+        });
+
+        // Clear rig
+        clearBtn.addEventListener('click', () => {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+            ws.send(JSON.stringify({ type: 'admin-clear' }));
+            colorBtns.forEach(b => b.classList.remove('selected'));
+            selectedColor = null;
+            selectedColors = [];
+            applyBtn.disabled = true;
+            persistToggle.checked = false;
+            
+            // Clear individual selectors
+            const diceCount = parseInt(diceCountSelect.value, 10);
+            for (let i = 0; i < diceCount; i++) {
+                const select = document.getElementById(`dice-color-${i}`);
+                if (select) {
+                    select.selectedIndex = 0;
+                }
+            }
+            
+            updateSelectedDiceDisplay();
+            updateReservedQueueDisplay([]);
+            log('Rig cleared — back to <span class="highlight">random</span>');
+        });
+
+        // ── Roll result display ────────────────────────────────
+
+        function showRollResult(results, count) {
+            noRollYet.style.display = 'none';
+            dicePreviewList.style.display = 'flex';
+            rollResultText.style.display = 'block';
+            rollResultLabel.style.display = 'block';
+
+            // Create dice with dots
+            dicePreviewList.innerHTML = '';
+            results.forEach(color => {
+                const dice = document.createElement('div');
+                dice.className = 'admin-dice';
+                dice.style.background = color.value;
+                const dot = document.createElement('span');
+                dice.appendChild(dot);
+                dicePreviewList.appendChild(dice);
+            });
+
+            // Result text - color each word individually
+            rollResultText.innerHTML = ''; // Clear previous content
+            results.forEach((color, index) => {
+                const span = document.createElement('span');
+                span.textContent = color.name;
+                span.style.color = color.value;
+                rollResultText.appendChild(span);
+                if (index < results.length - 1) {
+                    rollResultText.append(', ');
+                }
+            });
+            rollResultLabel.textContent = `${count} ${count === 1 ? 'die' : 'dice'} rolled`;
+        }
+
+        connect();
+        
+        // Initialize reserved dice display
+        updateReservedDiceDisplay();
+    </script>
+</body>
+
+</html>
