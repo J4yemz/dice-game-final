@@ -4,8 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Roll Color Dice, 3-sided Color Dice – Online Dice</title>
   <link rel="stylesheet" href="./styles/index.css">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="./src/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./src/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./src/images/favicon-16x16.png">
 </head>
 
 <body>
@@ -35,9 +39,11 @@
         </div>
       </div>
 
-      <p class="result">RESULT: <strong>ORANGE</strong></p>
+      <p class="result">RESULT: <strong>BLUE</strong></p>
+
+     
       <button class="btn btn-time" type="button">THE TIME KILLER !</button>
-      <button class="btn btn-roll" type="button">ROLL AGAIN !</button>
+      <button id="roll-button" class="btn btn-roll" type="button">ROLL AGAIN !</button>
 
       <p class="color-list">Possible colors are: <span class="red">Red</span>, <span class="orange">Orange</span>, <span
           class="yellow">Yellow</span>, <span class="green">Green</span>, <span class="blue">Blue</span> and <span
@@ -217,6 +223,13 @@
     <div class="roll-overlay-dice-list" aria-hidden="true"></div>
   </div>
 
+  <audio id="roll-sound" preload="auto">
+    <source src="./src/sounds/roll.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="success-sound" preload="auto">
+    <source src="./src/sounds/success.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const diceCountSelect = document.querySelector('.dropdown-2 select:first-child');
     const blogButtons = document.querySelectorAll('.blog-btn');
@@ -226,14 +239,17 @@
     const dicePreviewsContainer = document.querySelector('.dice-previews');
     const overlay = document.querySelector('.roll-overlay');
     const overlayDiceList = document.querySelector('.roll-overlay-dice-list');
+    const rollSound = document.getElementById('roll-sound');
+    const successSound = document.getElementById('success-sound');
+    const rollAnimationMs = 700;
 
     const diceColors = [
-      { name: 'RED', value: '#ff3434' },
-      { name: 'ORANGE', value: '#ff9f1a' },
-      { name: 'YELLOW', value: '#ffe100' },
-      { name: 'GREEN', value: '#008000' },
+      { name: 'RED', value: 'rgb(255, 0, 0)' },
+      { name: 'ORANGE', value: 'rgb(255, 165, 0)' },
+      { name: 'YELLOW', value: 'rgb(255, 215, 0)' },
+      { name: 'GREEN', value: 'rgb(0, 128, 0)' },
       { name: 'BLUE', value: '#0049ff' },
-      { name: 'PURPLE', value: '#8623ff' }
+      { name: 'PURPLE', value: 'rgb(128, 0, 128)' }
     ];
 
     // ── WebSocket connection ──────────────────────────────────
@@ -282,16 +298,18 @@
     }
 
     function applyResults(results) {
-      resultValue.innerHTML = ''; // Clear previous content
-      results.forEach((color, index) => {
-        const span = document.createElement('span');
-        span.textContent = color.name;
-        span.style.color = color.value;
-        resultValue.appendChild(span);
-        if (index < results.length - 1) {
-          resultValue.append(', ');
-        }
-      });
+      if (resultValue) {
+        resultValue.innerHTML = ''; // Clear previous content
+        results.forEach((color, index) => {
+          const span = document.createElement('span');
+          span.textContent = color.name;
+          span.style.color = color.value;
+          resultValue.appendChild(span);
+          if (index < results.length - 1) {
+            resultValue.append(', ');
+          }
+        });
+      }
       
       // Apply colors to each dice preview
       const dicePreviews = dicePreviewsContainer.querySelectorAll('.dice-preview');
@@ -340,6 +358,11 @@
         return;
       }
 
+      if (rollSound) {
+        rollSound.currentTime = 0;
+        rollSound.play().catch(() => {});
+      }
+
       const diceCount = getSelectedDiceCount();
       renderOverlayDice(diceCount);
       overlay.classList.add('is-visible');
@@ -347,7 +370,11 @@
       window.setTimeout(() => {
         rollColorDice(diceCount);
         overlay.classList.remove('is-visible');
-      }, 1000);
+        if (successSound) {
+          successSound.currentTime = 0;
+          successSound.play().catch(() => {});
+        }
+      }, rollAnimationMs);
     }
 
     // ── Init ──────────────────────────────────────────────────
@@ -360,7 +387,6 @@
       const diceCount = getSelectedDiceCount();
       renderDicePreviews(diceCount);
       renderOverlayDice(diceCount);
-      rollColorDice(diceCount);
     });
 
     blogButtons.forEach((button) => {

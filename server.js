@@ -34,12 +34,12 @@ wss.on('connection', (ws) => {
     if (msg.type === 'roll') {
       const count = Math.min(Math.max(Number(msg.count) || 1, 1), 100);
       const diceColors = [
-        { name: 'RED', value: '#ff3434' },
-        { name: 'ORANGE', value: '#ff9f1a' },
-        { name: 'YELLOW', value: '#ffe100' },
-        { name: 'GREEN', value: '#008000' },
+        { name: 'RED', value: 'rgb(255, 0, 0)' },
+        { name: 'ORANGE', value: 'rgb(255, 165, 0)' },
+        { name: 'YELLOW', value: 'rgb(255, 215, 0)' },
+        { name: 'GREEN', value: 'rgb(0, 128, 0)' },
         { name: 'BLUE', value: '#0049ff' },
-        { name: 'PURPLE', value: '#8623ff' }
+        { name: 'PURPLE', value: 'rgb(128, 0, 128)' }
       ];
 
       let results;

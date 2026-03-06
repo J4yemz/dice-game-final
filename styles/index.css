@@ -289,7 +289,7 @@ body {
   height: 64px;
   border: 5px solid #ffffff;
   border-radius: 12px;
-  background: #f7a400;
+  background: rgb(255, 165, 0);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -310,7 +310,7 @@ body {
   background: #ffffff;
   border: 3px solid #1389f6;
   color: #1389f6;
-  font-size: 34px;
+  font-size: 25px;
   line-height: 1;
   box-sizing: border-box;
 }
@@ -341,6 +341,29 @@ body {
   color: #ffffff;
 }
 
+#roll-button {
+  width: calc(100% - 10px);
+  box-sizing: border-box;
+  font-size: 22px;
+  padding: 13px 0;
+  margin-bottom: 10px;
+  text-shadow: -1px -1px 0 #ca8a00, 1px -1px 0 #ca8a00, -1px 1px 0 #ca8a00, 2px 2px 0 #ca8a00;
+  letter-spacing: 0.02em;
+  background: rgb(255, 215, 0);
+  background-image: linear-gradient(to bottom, rgb(255, 235, 0) 0%, rgb(255, 215, 0) 51%, rgb(255, 244, 188) 100%);
+  background-size: auto 200%;
+  border-top: 3px solid #fff;
+  border-right: 3px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.8);
+  border-left: 3px solid rgba(255, 255, 255, 0.8);
+  transition: 0.1s;
+}
+
+#roll-button:hover {
+  background-size: auto 200%;
+  background-position: bottom center;
+}
+
 .color-list {
   font-family: Arial, sans-serif;
   margin: 2px 0 0;
@@ -355,19 +378,19 @@ body {
 }
 
 .red {
-  color: #ff3434;
+  color: rgb(255, 0, 0);
 }
 
 .orange {
-  color: #ff9f1a;
+  color: rgb(255, 165, 0);
 }
 
 .yellow {
-  color: #ffe100;
+  color: rgb(255, 215, 0);
 }
 
 .green {
-  color:#008000;
+  color: rgb(0, 128, 0);
 }
 
 .blue {
@@ -375,7 +398,7 @@ body {
 }
 
 .purple {
-  color: #8623ff;
+  color: rgb(128, 0, 128);
 }
 
 .site-footer {
