@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 10000;
 
 // Serve static files
 app.use(express.static(path.join(__dirname)));
