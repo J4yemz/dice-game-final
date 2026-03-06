@@ -42,7 +42,7 @@
       <p class="result">RESULT: <strong>BLUE</strong></p>
 
      
-      <button class="btn btn-time" type="button">THE TIME KILLER !</button>
+      <!-- <button class="btn btn-time" type="button">THE TIME KILLER !</button> -->
       <button id="roll-button" class="btn btn-roll" type="button">ROLL AGAIN !</button>
 
       <p class="color-list">Possible colors are: <span class="red">Red</span>, <span class="orange">Orange</span>, <span
@@ -233,7 +233,7 @@
   <script>
     const diceCountSelect = document.querySelector('.dropdown-2 select:first-child');
     const blogButtons = document.querySelectorAll('.blog-btn');
-    const timeKillerButton = document.querySelector('.btn-time');
+    // const timeKillerButton = document.querySelector('.btn-time');
     const rollAgainButton = document.querySelector('.btn-roll');
     const resultValue = document.querySelector('.result strong');
     const dicePreviewsContainer = document.querySelector('.dice-previews');
@@ -398,9 +398,9 @@
       });
     });
 
-    timeKillerButton.addEventListener('click', () => {
-      window.open('https://timekiller.app/', '_blank', 'noopener,noreferrer');
-    });
+    // timeKillerButton.addEventListener('click', () => {
+    //   window.open('https://timekiller.app/', '_blank', 'noopener,noreferrer');
+    // });
 
     rollAgainButton.addEventListener('click', showGoodLuckOverlay);
   </script>
