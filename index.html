@@ -360,9 +360,15 @@
       overlayDiceList.style.transform = 'translate(-50%, -50%)';
 
       if (overlayTitle) {
+        const firstOverlayDie = overlayDiceList.querySelector('.roll-overlay-dice');
+        const diceSize = firstOverlayDie ? firstOverlayDie.offsetHeight : 80;
+        const titleHeight = overlayTitle.offsetHeight || 40;
+        const titleGap = 24;
+        const titleTop = Math.max(24, centerY - (diceSize / 2) - titleHeight - titleGap);
+
         overlayTitle.style.position = 'fixed';
         overlayTitle.style.left = `${centerX}px`;
-        overlayTitle.style.top = `${Math.max(24, centerY - 95)}px`;
+        overlayTitle.style.top = `${titleTop}px`;
         overlayTitle.style.transform = 'translateX(-50%)';
       }
     }

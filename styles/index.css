@@ -49,6 +49,7 @@ body {
   box-sizing: border-box;
   background: rgba(0, 136, 255, 0.45);
   border: 5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: none;
   border-radius: 22px;
   margin-bottom: 130px;
   transform-origin: center;
@@ -59,11 +60,28 @@ body {
 }
 
 @keyframes result-zoom-out {
-  from {
-    transform: scale(1.03);
+  0% {
+    transform: scale(1.03) translate(0, 0);
+    box-shadow: none;
   }
-  to {
-    transform: scale(1);
+  20% {
+    transform: scale(1.02) translate(-2px, 0);
+  }
+  40% {
+    transform: scale(1.015) translate(2px, 0);
+  }
+  60% {
+    transform: scale(1.01) translate(-2px, 0);
+  }
+  78% {
+    transform: scale(1.006) translate(2px, 0);
+  }
+  90% {
+    transform: scale(1.003) translate(-1px, 0);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+    box-shadow: none;
   }
 }
 
@@ -488,27 +506,9 @@ body.is-rolling .site-footer {
   pointer-events: none;
 }
 
-.roll-overlay::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 1;
-  background:
-    linear-gradient(to right, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 22%),
-    linear-gradient(to left, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 22%),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 24%),
-    linear-gradient(to top, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 24%);
-  transition: opacity 0.2s ease;
-}
-
 .roll-overlay.is-visible {
   opacity: 1;
   visibility: visible;
-}
-
-.roll-overlay.is-visible::before {
-  opacity: 1;
 }
 
 .loader.hide {
@@ -591,6 +591,55 @@ body.is-rolling .site-footer {
   }
   84% {
     transform: translate(0, -2px) rotate(-1deg);
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 781px) {
+  .app-shell {
+    padding: 36px 18px 24px;
+  }
+
+  .dice-logo {
+    margin-top: 34px;
+    margin-bottom: 16px;
+  }
+
+  .roll-dice-container {
+    max-width: 680px;
+    padding: 16px 14px 28px;
+    margin-bottom: 76px;
+  }
+
+  .dropdown-2 select {
+    font-size: 20px;
+    height: 42px;
+  }
+
+  #roll-button {
+    font-size: 20px;
+    padding: 11px 0;
+  }
+
+  .info-card {
+    padding: 28px 20px;
+  }
+
+  .blog-card {
+    padding: 24px 18px 18px;
+  }
+
+  .roll-overlay {
+    padding-top: 135px;
+  }
+
+  .roll-overlay-title {
+    font-size: 38px;
+  }
+
+  .roll-overlay-dice {
+    width: 68px;
+    height: 68px;
+    border-width: 7px;
   }
 }
 
@@ -763,6 +812,35 @@ body.is-rolling .site-footer {
 
   .roll-overlay {
     padding-top: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell {
+    padding: 30px 8px 16px;
+  }
+
+  .roll-dice-container {
+    padding: 12px 8px 16px;
+  }
+
+  .dropdown-2 {
+    gap: 8px;
+  }
+
+  .dropdown-2 select {
+    font-size: 15px;
+    padding: 0 8px;
+  }
+
+  .roll-overlay-title {
+    font-size: 28px;
+  }
+
+  .roll-overlay-dice {
+    width: 56px;
+    height: 56px;
+    border-width: 6px;
   }
 }
 
