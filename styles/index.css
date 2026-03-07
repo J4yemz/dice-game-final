@@ -15,6 +15,12 @@ body {
   color: #ffffff;
 }
 
+:root {
+  --dice-size: 64px;
+  --dice-border: 8px;
+  --dice-radius: 12px;
+}
+
 .app-shell {
   max-width: 1120px;
   margin: 0 auto;
@@ -51,8 +57,14 @@ body {
   border: 5px solid rgba(255, 255, 255, 0.5);
   box-shadow: none;
   border-radius: 22px;
-  margin-bottom: 130px;
+  margin-bottom: 400px;
   transform-origin: center;
+}
+
+@media (min-width: 1025px) {
+  .roll-dice-container {
+    max-width: 650px;
+  }
 }
 
 .roll-dice-container.result-zoom-out {
@@ -318,10 +330,10 @@ body {
 }
 
 .dice-preview {
-  width: 64px;
-  height: 64px;
-  border: 8px solid #ffffff;
-  border-radius: 12px;
+  width: var(--dice-size);
+  height: var(--dice-size);
+  border: var(--dice-border) solid #ffffff;
+  border-radius: var(--dice-radius);
   background: rgb(0, 0, 255);
   display: flex;
   justify-content: center;
@@ -520,7 +532,7 @@ body.is-rolling .site-footer {
 .roll-overlay-title {
   margin: 0;
   font-size: 35px;
-  line-height: 1;
+  line-height: 1.1;
   color: #ffffff;
   position: relative;
   z-index: 1;
@@ -530,9 +542,9 @@ body.is-rolling .site-footer {
 
 .loader-title {
   text-shadow: -1px -1px 0 #08f, 1px -1px 0 #08f, -1px 1px 0 #08f, 3px 3px 0 #08f;
-  letter-spacing: 0.02em;
+  
   margin-top: 0;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   visibility: hidden;
 }
 
@@ -547,15 +559,15 @@ body.is-rolling .site-footer {
 }
 
 .roll-overlay-dice {
-  width: 80px;
-  height: 80px;
-  border-radius: 14px;
-  border: 8px solid rgba(255, 255, 255, 0.82);
+  width: var(--dice-size);
+  height: var(--dice-size);
+  border-radius: var(--dice-radius);
+  border: var(--dice-border) solid rgba(255, 255, 255, 0.82);
   background: rgba(255, 255, 255, 0.62);
   display: flex;
   justify-content: center;
   align-items: center;
-  box-sizing: border-box;
+  box-sizing: content-box;
 }
 
 .roll-overlay.is-visible .roll-overlay-dice {
@@ -571,28 +583,28 @@ body.is-rolling .site-footer {
 
 @keyframes rolling-dice {
   0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: translate(0, 0);
   }
   12% {
-    transform: translate(-2px, 0) rotate(-1deg);
+    transform: translate(-2px, 0);
   }
   24% {
-    transform: translate(2px, 0) rotate(1deg);
+    transform: translate(2px, 0);
   }
   36% {
-    transform: translate(0, -2px) rotate(-1deg);
+    transform: translate(0, -2px);
   }
   48% {
-    transform: translate(0, 2px) rotate(1deg);
+    transform: translate(0, 2px);
   }
   60% {
-    transform: translate(-2px, 0) rotate(-1.5deg);
+    transform: translate(-2px, 0);
   }
   72% {
-    transform: translate(3px, 0) rotate(1.5deg);
+    transform: translate(3px, 0);
   }
   84% {
-    transform: translate(0, -2px) rotate(-1deg);
+    transform: translate(0, -2px);
   }
 }
 
@@ -641,16 +653,16 @@ body.is-rolling .site-footer {
     line-height: 1.1;
   }
 
-  .roll-overlay-dice {
-    width: 68px;
-    height: 68px;
-    border-width: 7px;
-  }
 }
 
 @media (max-width: 780px) {
   .app-shell {
     padding: 35px 12px 24px;
+  }
+
+  .roll-dice-container {
+    border: none;
+    background: transparent;
   }
 
   .dropdown-2 {
@@ -748,12 +760,6 @@ body.is-rolling .site-footer {
     font-size: 13px;
   }
 
-  .roll-overlay-dice {
-    width: 64px;
-    height: 64px;
-    border-width: 8px;
-  }
-
   .roll-overlay {
     justify-content: center;
     gap: 14px;
@@ -818,12 +824,6 @@ body.is-rolling .site-footer {
     gap: 8px;
   }
 
-  .roll-overlay-dice {
-    width: 56px;
-    height: 56px;
-    border-width: 6px;
-  }
-
   .roll-overlay-title {
     font-size: 30px;
     line-height: 1.12;
@@ -857,10 +857,5 @@ body.is-rolling .site-footer {
     line-height: 1.15;
   }
 
-  .roll-overlay-dice {
-    width: 56px;
-    height: 56px;
-    border-width: 6px;
-  }
 }
 

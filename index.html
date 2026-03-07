@@ -19,7 +19,7 @@
     </div>
 
     <div class="roll-dice-container">
-      <h2>ROLL COLOR DICE</h2>
+      <!--<h2>ROLL COLOR DICE</h2>-->
 
       <div class="dropdown-2">
         <select aria-label="Number of dice">
@@ -223,13 +223,6 @@
     <div class="roll-overlay-dice-list" aria-hidden="true"></div>
   </div>
 
-  <audio id="roll-sound" preload="auto">
-    <source src="./src/sounds/roll.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="success-sound" preload="auto">
-    <source src="./src/sounds/success.mp3" type="audio/mpeg">
-  </audio>
-
   <script>
     const diceCountSelect = document.querySelector('.dropdown-2 select:first-child');
     const blogButtons = document.querySelectorAll('.blog-btn');
@@ -241,8 +234,6 @@
     const overlay = document.querySelector('.roll-overlay');
     const overlayTitle = document.querySelector('.roll-overlay-title');
     const overlayDiceList = document.querySelector('.roll-overlay-dice-list');
-    const rollSound = document.getElementById('roll-sound');
-    const successSound = document.getElementById('success-sound');
     const rollDelayMs = 800;
     const loaderTitles = [
       'Fingers Crossed..',
@@ -296,14 +287,39 @@
       return Number.isFinite(count) && count > 0 ? count : 1;
     }
 
+    function getRandomPreviewColors(count) {
+      const colors = [];
+
+      for (let i = 0; i < count; i += 1) {
+        colors.push(diceColors[Math.floor(Math.random() * diceColors.length)]);
+      }
+
+      // Avoid showing an all-blue preview for multi-dice selections.
+      if (count > 1 && colors.every((color) => color.name === 'BLUE')) {
+        const nonBlueColors = diceColors.filter((color) => color.name !== 'BLUE');
+        colors[0] = nonBlueColors[Math.floor(Math.random() * nonBlueColors.length)];
+      }
+
+      return colors;
+    }
+
     function renderDicePreviews(count) {
       dicePreviewsContainer.innerHTML = '';
+      const previewColors = getRandomPreviewColors(count);
+
       for (let i = 0; i < count; i++) {
         const dicePreview = document.createElement('div');
         dicePreview.className = 'dice-preview';
         dicePreview.setAttribute('aria-label', `Current dice color ${i + 1}`);
         const span = document.createElement('span');
         dicePreview.appendChild(span);
+
+        const previewColor = previewColors[i];
+        if (previewColor) {
+          const appliedColor = previewColor.name === 'BLUE' ? '#0000ff' : previewColor.value;
+          dicePreview.style.background = appliedColor;
+        }
+
         dicePreviewsContainer.appendChild(dicePreview);
       }
     }
@@ -349,41 +365,58 @@
         diceElement.appendChild(dotElement);
         overlayDiceList.appendChild(diceElement);
       }
+
+      syncOverlayDiceLayout(count);
     }
 
-    function syncOverlayPositionToPreview() {
-      const useViewportCenter = window.innerWidth <= 1024;
+    function syncOverlayDiceLayout(count) {
+      const isMobileView = window.innerWidth <= 780;
 
-      if (useViewportCenter) {
-        overlayDiceList.style.position = 'relative';
-        overlayDiceList.style.left = 'auto';
-        overlayDiceList.style.top = 'auto';
-        overlayDiceList.style.transform = 'none';
-
-        if (overlayTitle) {
-          overlayTitle.style.position = 'relative';
-          overlayTitle.style.left = 'auto';
-          overlayTitle.style.top = 'auto';
-          overlayTitle.style.transform = 'none';
-          overlayTitle.style.maxWidth = `${Math.min(window.innerWidth - 32, 640)}px`;
-          overlayTitle.style.textAlign = 'center';
-        }
-
+      if (isMobileView && count === 3) {
+        overlayDiceList.style.display = 'grid';
+        overlayDiceList.style.gridTemplateColumns = 'repeat(3, calc(var(--dice-size) + (var(--dice-border) * 2)))';
+        overlayDiceList.style.gap = '12px';
+        overlayDiceList.style.justifyItems = 'center';
+        overlayDiceList.style.alignItems = 'center';
+        overlayDiceList.style.flexWrap = 'nowrap';
         return;
       }
 
+      overlayDiceList.style.display = 'flex';
+      overlayDiceList.style.gridTemplateColumns = 'none';
+      overlayDiceList.style.gap = '';
+      overlayDiceList.style.justifyItems = '';
+      overlayDiceList.style.alignItems = '';
+      overlayDiceList.style.flexWrap = 'wrap';
+    }
+
+    function syncOverlayPositionToPreview() {
       const previewRect = dicePreviewsContainer.getBoundingClientRect();
       const centerX = previewRect.left + (previewRect.width / 2);
       let centerY = previewRect.top + (previewRect.height / 2);
 
-      const diceListHeight = overlayDiceList.offsetHeight || 80;
-      const titleGap = window.innerWidth <= 480 ? 28 : 24;
+      const isMobile = window.innerWidth <= 480;
+      const sidePadding = isMobile ? 16 : 20;
+      const topMargin = isMobile ? 14 : 22;
+      const titleGap = isMobile ? 16 : 20;
+      const diceListHeight = overlayDiceList.getBoundingClientRect().height || 64;
 
+      // Apply width first so title height measurement is accurate before positioning.
       if (overlayTitle) {
-        const titleHeight = overlayTitle.offsetHeight || 40;
-        const topMargin = window.innerWidth <= 480 ? 16 : 24;
-        const maxCenterY = window.innerHeight - (diceListHeight / 2) - topMargin;
-        const minCenterY = topMargin + titleHeight + titleGap + (diceListHeight / 2);
+        overlayTitle.style.position = 'fixed';
+        overlayTitle.style.left = `${centerX}px`;
+        overlayTitle.style.transform = 'translateX(-50%)';
+        overlayTitle.style.maxWidth = `${Math.min(window.innerWidth - (sidePadding * 2), 760)}px`;
+        overlayTitle.style.textAlign = 'center';
+      }
+
+      const titleHeight = overlayTitle ? (overlayTitle.getBoundingClientRect().height || 40) : 0;
+      const minCenterY = topMargin + titleHeight + titleGap + (diceListHeight / 2);
+      const maxCenterY = window.innerHeight - topMargin - (diceListHeight / 2);
+
+      if (minCenterY > maxCenterY) {
+        centerY = (minCenterY + maxCenterY) / 2;
+      } else {
         centerY = Math.max(minCenterY, Math.min(centerY, maxCenterY));
       }
 
@@ -393,21 +426,15 @@
       overlayDiceList.style.transform = 'translate(-50%, -50%)';
 
       if (overlayTitle) {
-        const titleHeight = overlayTitle.offsetHeight || 40;
-        const topMargin = window.innerWidth <= 480 ? 16 : 24;
         const titleTop = Math.max(topMargin, centerY - (diceListHeight / 2) - titleHeight - titleGap);
 
-        overlayTitle.style.position = 'fixed';
-        overlayTitle.style.left = `${centerX}px`;
         overlayTitle.style.top = `${titleTop}px`;
-        overlayTitle.style.transform = 'translateX(-50%)';
-        overlayTitle.style.maxWidth = `${Math.min(window.innerWidth - 24, 680)}px`;
-        overlayTitle.style.textAlign = 'center';
       }
     }
 
     window.addEventListener('resize', () => {
       if (overlay.classList.contains('is-visible')) {
+        syncOverlayDiceLayout(getSelectedDiceCount());
         syncOverlayPositionToPreview();
       }
     });
@@ -445,11 +472,6 @@
         return;
       }
 
-      if (rollSound) {
-        rollSound.currentTime = 0;
-        rollSound.play().catch(() => {});
-      }
-
       const diceCount = getSelectedDiceCount();
       if (overlayTitle) {
         const randomTitle = loaderTitles[Math.floor(Math.random() * loaderTitles.length)];
@@ -471,10 +493,6 @@
           overlay.classList.remove('is-visible');
           overlay.classList.add('hide');
           document.body.classList.remove('is-rolling');
-          if (successSound) {
-            successSound.currentTime = 0;
-            successSound.play().catch(() => {});
-          }
         }, rollDelayMs);
       });
     }
