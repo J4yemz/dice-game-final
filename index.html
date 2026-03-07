@@ -23,9 +23,9 @@
 
       <div class="dropdown-2">
         <select aria-label="Number of dice">
-          <option selected>1 DICE</option>
-          <option>2 DICE</option>
-          <option>3 DICE</option>
+          <option value="1" selected>1 DICE</option>
+          <option value="2">2 DICE</option>
+          <option value="3">3 DICE</option>
         </select>
         <select aria-label="Dice type">
           <option selected>COLOR DICE</option>
@@ -218,8 +218,8 @@
     <p class="footer-copy">© 2021 ONLINE-DICE.COM</p>
   </footer>
 
-  <div class="roll-overlay" aria-hidden="true">
-    <p class="roll-overlay-title">LET'S GO</p>
+  <div class="roll-overlay loader hide" aria-hidden="true">
+    <p class="roll-overlay-title loader-title">Fingers Crossed..</p>
     <div class="roll-overlay-dice-list" aria-hidden="true"></div>
   </div>
 
@@ -235,13 +235,22 @@
     const blogButtons = document.querySelectorAll('.blog-btn');
     // const timeKillerButton = document.querySelector('.btn-time');
     const rollAgainButton = document.querySelector('.btn-roll');
+    const resultContainer = document.querySelector('.roll-dice-container');
     const resultValue = document.querySelector('.result strong');
     const dicePreviewsContainer = document.querySelector('.dice-previews');
     const overlay = document.querySelector('.roll-overlay');
+    const overlayTitle = document.querySelector('.roll-overlay-title');
     const overlayDiceList = document.querySelector('.roll-overlay-dice-list');
     const rollSound = document.getElementById('roll-sound');
     const successSound = document.getElementById('success-sound');
-    const rollAnimationMs = 700;
+    const rollDelayMs = 800;
+    const loaderTitles = [
+      'Fingers Crossed..',
+      'What color would it be?',
+      'Color me surprised!',
+      'Good luck!',
+      "Let's roll!"
+    ];
 
     const diceColors = [
       { name: 'RED', value: 'rgb(255, 0, 0)' },
@@ -255,6 +264,7 @@
     // ── WebSocket connection ──────────────────────────────────
     let ws;
     let pendingRollCallback = null;
+    let animateResultContainer = false;
 
     function connectWS() {
       const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -282,7 +292,8 @@
 
     // ── Helpers ───────────────────────────────────────────────
     function getSelectedDiceCount() {
-      return Number.parseInt(diceCountSelect.value, 10) || 1;
+      const count = Number.parseInt(diceCountSelect.value, 10);
+      return Number.isFinite(count) && count > 0 ? count : 1;
     }
 
     function renderDicePreviews(count) {
@@ -318,6 +329,13 @@
           dicePreviews[index].style.background = color.value;
         }
       });
+
+      if (animateResultContainer && resultContainer) {
+        resultContainer.classList.remove('result-zoom-out');
+        void resultContainer.offsetWidth;
+        resultContainer.classList.add('result-zoom-out');
+        animateResultContainer = false;
+      }
     }
 
     function renderOverlayDice(count) {
@@ -331,6 +349,24 @@
       }
     }
 
+    function syncOverlayPositionToPreview() {
+      const previewRect = dicePreviewsContainer.getBoundingClientRect();
+      const centerX = previewRect.left + (previewRect.width / 2);
+      const centerY = previewRect.top + (previewRect.height / 2);
+
+      overlayDiceList.style.position = 'fixed';
+      overlayDiceList.style.left = `${centerX}px`;
+      overlayDiceList.style.top = `${centerY}px`;
+      overlayDiceList.style.transform = 'translate(-50%, -50%)';
+
+      if (overlayTitle) {
+        overlayTitle.style.position = 'fixed';
+        overlayTitle.style.left = `${centerX}px`;
+        overlayTitle.style.top = `${Math.max(24, centerY - 95)}px`;
+        overlayTitle.style.transform = 'translateX(-50%)';
+      }
+    }
+
     // Fallback for when WebSocket is not connected
     function rollLocalRandom(count) {
       const results = [];
@@ -340,16 +376,22 @@
       return results;
     }
 
-    function rollColorDice(count) {
+    function rollColorDice(count, onComplete) {
       if (ws && ws.readyState === WebSocket.OPEN) {
         // Ask the server for the result
         pendingRollCallback = (results) => {
           applyResults(results);
+          if (onComplete) {
+            onComplete();
+          }
         };
         ws.send(JSON.stringify({ type: 'roll', count }));
       } else {
         // Fallback: local random
         applyResults(rollLocalRandom(count));
+        if (onComplete) {
+          onComplete();
+        }
       }
     }
 
@@ -364,24 +406,38 @@
       }
 
       const diceCount = getSelectedDiceCount();
+      if (overlayTitle) {
+        const randomTitle = loaderTitles[Math.floor(Math.random() * loaderTitles.length)];
+        overlayTitle.textContent = randomTitle;
+        overlayTitle.style.visibility = 'visible';
+      }
       renderOverlayDice(diceCount);
+      syncOverlayPositionToPreview();
+      animateResultContainer = true;
+      document.body.classList.add('is-rolling');
+      overlay.classList.remove('hide');
       overlay.classList.add('is-visible');
 
-      window.setTimeout(() => {
-        rollColorDice(diceCount);
-        overlay.classList.remove('is-visible');
-        if (successSound) {
-          successSound.currentTime = 0;
-          successSound.play().catch(() => {});
-        }
-      }, rollAnimationMs);
+      rollColorDice(diceCount, () => {
+        window.setTimeout(() => {
+          if (overlayTitle) {
+            overlayTitle.style.visibility = 'hidden';
+          }
+          overlay.classList.remove('is-visible');
+          overlay.classList.add('hide');
+          document.body.classList.remove('is-rolling');
+          if (successSound) {
+            successSound.currentTime = 0;
+            successSound.play().catch(() => {});
+          }
+        }, rollDelayMs);
+      });
     }
 
     // ── Init ──────────────────────────────────────────────────
     const initialDiceCount = getSelectedDiceCount();
     renderDicePreviews(initialDiceCount);
     renderOverlayDice(initialDiceCount);
-    rollColorDice(initialDiceCount);
 
     diceCountSelect.addEventListener('change', () => {
       const diceCount = getSelectedDiceCount();
