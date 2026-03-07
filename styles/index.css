@@ -427,7 +427,7 @@ body {
 }
 
 .blue {
-  color: #0049ff;
+  color: rgb(0, 0, 255);
 }
 
 .purple {
@@ -524,6 +524,8 @@ body.is-rolling .site-footer {
   color: #ffffff;
   position: relative;
   z-index: 1;
+  max-width: min(92vw, 680px);
+  text-align: center;
 }
 
 .loader-title {
@@ -754,7 +756,8 @@ body.is-rolling .site-footer {
   }
 
   .roll-overlay-title {
-    font-size: 42px;
+    font-size: 36px;
+    line-height: 1.05;
   }
 
   .roll-overlay-dice span {
@@ -806,8 +809,19 @@ body.is-rolling .site-footer {
     padding: 6px 8px;
   }
 
+  .roll-overlay-dice-list {
+    gap: 8px;
+  }
+
+  .roll-overlay-dice {
+    width: 56px;
+    height: 56px;
+    border-width: 6px;
+  }
+
   .roll-overlay-title {
     font-size: 32px;
+    line-height: 1.08;
   }
 
   .roll-overlay {

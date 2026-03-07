@@ -257,7 +257,7 @@
       { name: 'ORANGE', value: 'rgb(255, 165, 0)' },
       { name: 'YELLOW', value: 'rgb(255, 215, 0)' },
       { name: 'GREEN', value: 'rgb(0, 128, 0)' },
-      { name: 'BLUE', value: '#0049ff' },
+      { name: 'BLUE', value: 'rgb(0, 0, 255)' },
       { name: 'PURPLE', value: 'rgb(128, 0, 128)' }
     ];
 
@@ -350,9 +350,10 @@
     }
 
     function syncOverlayPositionToPreview() {
+      const useViewportCenter = window.innerWidth <= 1024;
       const previewRect = dicePreviewsContainer.getBoundingClientRect();
-      const centerX = previewRect.left + (previewRect.width / 2);
-      const centerY = previewRect.top + (previewRect.height / 2);
+      const centerX = useViewportCenter ? window.innerWidth / 2 : previewRect.left + (previewRect.width / 2);
+      const centerY = useViewportCenter ? window.innerHeight / 2 : previewRect.top + (previewRect.height / 2);
 
       overlayDiceList.style.position = 'fixed';
       overlayDiceList.style.left = `${centerX}px`;
@@ -360,18 +361,25 @@
       overlayDiceList.style.transform = 'translate(-50%, -50%)';
 
       if (overlayTitle) {
-        const firstOverlayDie = overlayDiceList.querySelector('.roll-overlay-dice');
-        const diceSize = firstOverlayDie ? firstOverlayDie.offsetHeight : 80;
+        const diceListHeight = overlayDiceList.offsetHeight || 80;
         const titleHeight = overlayTitle.offsetHeight || 40;
         const titleGap = 24;
-        const titleTop = Math.max(24, centerY - (diceSize / 2) - titleHeight - titleGap);
+        const titleTop = Math.max(24, centerY - (diceListHeight / 2) - titleHeight - titleGap);
 
         overlayTitle.style.position = 'fixed';
         overlayTitle.style.left = `${centerX}px`;
         overlayTitle.style.top = `${titleTop}px`;
         overlayTitle.style.transform = 'translateX(-50%)';
+        overlayTitle.style.maxWidth = `${Math.min(window.innerWidth - 24, 680)}px`;
+        overlayTitle.style.textAlign = 'center';
       }
     }
+
+    window.addEventListener('resize', () => {
+      if (overlay.classList.contains('is-visible')) {
+        syncOverlayPositionToPreview();
+      }
+    });
 
     // Fallback for when WebSocket is not connected
     function rollLocalRandom(count) {
