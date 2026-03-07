@@ -312,9 +312,10 @@
       if (resultValue) {
         resultValue.innerHTML = ''; // Clear previous content
         results.forEach((color, index) => {
+          const appliedColor = color.name === 'BLUE' ? '#0000ff' : color.value;
           const span = document.createElement('span');
           span.textContent = color.name;
-          span.style.color = color.value;
+          span.style.color = appliedColor;
           resultValue.appendChild(span);
           if (index < results.length - 1) {
             resultValue.append(', ');
@@ -326,7 +327,8 @@
       const dicePreviews = dicePreviewsContainer.querySelectorAll('.dice-preview');
       results.forEach((color, index) => {
         if (dicePreviews[index]) {
-          dicePreviews[index].style.background = color.value;
+          const appliedColor = color.name === 'BLUE' ? '#0000ff' : color.value;
+          dicePreviews[index].style.background = appliedColor;
         }
       });
 
