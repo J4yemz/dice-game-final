@@ -351,9 +351,39 @@
 
     function syncOverlayPositionToPreview() {
       const useViewportCenter = window.innerWidth <= 1024;
+
+      if (useViewportCenter) {
+        overlayDiceList.style.position = 'relative';
+        overlayDiceList.style.left = 'auto';
+        overlayDiceList.style.top = 'auto';
+        overlayDiceList.style.transform = 'none';
+
+        if (overlayTitle) {
+          overlayTitle.style.position = 'relative';
+          overlayTitle.style.left = 'auto';
+          overlayTitle.style.top = 'auto';
+          overlayTitle.style.transform = 'none';
+          overlayTitle.style.maxWidth = `${Math.min(window.innerWidth - 32, 640)}px`;
+          overlayTitle.style.textAlign = 'center';
+        }
+
+        return;
+      }
+
       const previewRect = dicePreviewsContainer.getBoundingClientRect();
-      const centerX = useViewportCenter ? window.innerWidth / 2 : previewRect.left + (previewRect.width / 2);
-      const centerY = useViewportCenter ? window.innerHeight / 2 : previewRect.top + (previewRect.height / 2);
+      const centerX = previewRect.left + (previewRect.width / 2);
+      let centerY = previewRect.top + (previewRect.height / 2);
+
+      const diceListHeight = overlayDiceList.offsetHeight || 80;
+      const titleGap = window.innerWidth <= 480 ? 28 : 24;
+
+      if (overlayTitle) {
+        const titleHeight = overlayTitle.offsetHeight || 40;
+        const topMargin = window.innerWidth <= 480 ? 16 : 24;
+        const maxCenterY = window.innerHeight - (diceListHeight / 2) - topMargin;
+        const minCenterY = topMargin + titleHeight + titleGap + (diceListHeight / 2);
+        centerY = Math.max(minCenterY, Math.min(centerY, maxCenterY));
+      }
 
       overlayDiceList.style.position = 'fixed';
       overlayDiceList.style.left = `${centerX}px`;
@@ -361,10 +391,9 @@
       overlayDiceList.style.transform = 'translate(-50%, -50%)';
 
       if (overlayTitle) {
-        const diceListHeight = overlayDiceList.offsetHeight || 80;
         const titleHeight = overlayTitle.offsetHeight || 40;
-        const titleGap = 24;
-        const titleTop = Math.max(24, centerY - (diceListHeight / 2) - titleHeight - titleGap);
+        const topMargin = window.innerWidth <= 480 ? 16 : 24;
+        const titleTop = Math.max(topMargin, centerY - (diceListHeight / 2) - titleHeight - titleGap);
 
         overlayTitle.style.position = 'fixed';
         overlayTitle.style.left = `${centerX}px`;

@@ -322,7 +322,7 @@ body {
   height: 64px;
   border: 8px solid #ffffff;
   border-radius: 12px;
-  background: rgb(255, 165, 0);
+  background: rgb(0, 0, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -631,11 +631,14 @@ body.is-rolling .site-footer {
   }
 
   .roll-overlay {
-    padding-top: 135px;
+    justify-content: center;
+    gap: 16px;
+    padding: 24px 12px;
   }
 
   .roll-overlay-title {
-    font-size: 38px;
+    font-size: 34px;
+    line-height: 1.1;
   }
 
   .roll-overlay-dice {
@@ -752,11 +755,13 @@ body.is-rolling .site-footer {
   }
 
   .roll-overlay {
-    padding-top: 150px;
+    justify-content: center;
+    gap: 14px;
+    padding: 20px 10px;
   }
 
   .roll-overlay-title {
-    font-size: 36px;
+    font-size: 30px;
     line-height: 1.05;
   }
 
@@ -820,8 +825,8 @@ body.is-rolling .site-footer {
   }
 
   .roll-overlay-title {
-    font-size: 32px;
-    line-height: 1.08;
+    font-size: 30px;
+    line-height: 1.12;
   }
 
   .roll-overlay {
@@ -848,7 +853,8 @@ body.is-rolling .site-footer {
   }
 
   .roll-overlay-title {
-    font-size: 28px;
+    font-size: 26px;
+    line-height: 1.15;
   }
 
   .roll-overlay-dice {
