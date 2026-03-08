@@ -4,6 +4,12 @@
   font-display: swap;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -215,22 +221,36 @@ body {
   letter-spacing: 1px;
 }
 
+#sub-title2 {
+  text-shadow: -1px -1px 0 #08f, 1px -1px 0 #08f, -1px 1px 0 #08f, 3px 3px 0 #08f;
+  letter-spacing: 0.02em;
+  padding: 0;
+  font-size: 24px;
+}
+
 .dropdown-2 {
   width: 100%;
   display: flex;
   gap: 12px;
+  align-items: stretch;
 }
 
 .dropdown-2 select {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   height: 44px;
   border: 3px solid #1389f6;
   border-radius: 6px;
   background: #ffffff;
   color: #1389f6;
-  font-size: 24px;
+  font-size: 20px;
   font-family: "DiceFont", sans-serif;
   padding: 0 14px;
+  box-sizing: border-box;
+}
+
+#dice-count-select {
+  flex: 1.25 1 0;
 }
 
 .admin-section {
@@ -571,7 +591,7 @@ body.is-rolling .site-footer {
 }
 
 .roll-overlay.is-visible .roll-overlay-dice {
-  animation: rolling-dice 0.50s linear ;
+  animation: rolling-dice 1.2s linear;
 }
 
 .roll-overlay-dice span {
@@ -613,20 +633,25 @@ body.is-rolling .site-footer {
     padding: 36px 18px 24px;
   }
 
+  .info-section {
+    max-width: 1000px;
+  }
+
   .dice-logo {
     margin-top: 34px;
     margin-bottom: 16px;
   }
 
   .roll-dice-container {
-    max-width: 680px;
+    max-width: 1000px;
     padding: 16px 14px 28px;
-    margin-bottom: 76px;
+    margin-bottom: 10px;
   }
 
   .dropdown-2 select {
-    font-size: 20px;
+    font-size: 18px;
     height: 42px;
+    padding: 0 12px;
   }
 
   #roll-button {
@@ -635,7 +660,11 @@ body.is-rolling .site-footer {
   }
 
   .info-card {
+    width: 100%;
+    max-width: 900px;
     padding: 28px 20px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .blog-card {
@@ -663,16 +692,20 @@ body.is-rolling .site-footer {
   .roll-dice-container {
     border: none;
     background: transparent;
+    width: 100%;
+    max-width: 100%;
   }
 
   .dropdown-2 {
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
 
   .dropdown-2 select {
-    min-width: 0;
-    font-size: 20px;
+    flex: 1 1 calc(50% - 6px);
+    min-width: 120px;
+    font-size: 16px;
+    padding: 0 10px;
   }
 
   .result {
@@ -788,10 +821,23 @@ body.is-rolling .site-footer {
     margin-bottom: 42px;
   }
 
+  .dropdown-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
   .dropdown-2 select {
+    width: 100%;
+    min-width: 0;
+    flex: initial;
     height: 42px;
-    font-size: 17px;
+    font-size: 16px;
     padding: 0 10px;
+  }
+
+  #dice-count-select {
+    flex: initial;
   }
 
   #roll-button {
@@ -844,11 +890,16 @@ body.is-rolling .site-footer {
   }
 
   .dropdown-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
 
   .dropdown-2 select {
-    font-size: 15px;
+    width: 100%;
+    min-width: 0;
+    flex: initial;
+    font-size: 14px;
     padding: 0 8px;
   }
 

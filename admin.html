@@ -319,10 +319,10 @@
         .dice-count-dropdown {
             width: 100%;
             height: 44px;
-            border: 3px solid #ffd900;
+            border: 3px solid #1389f6;
             border-radius: 8px;
             background: #ffffff;
-            color: #ffd900;
+            color: #1389f6;
             font-size: 18px;
             font-family: "DiceFont", sans-serif;
             padding: 0 14px;
@@ -407,8 +407,6 @@
         <div class="dice-count-selector">
             <select id="diceCountSelect" class="dice-count-dropdown">
                 <option value="1">1 Die</option>
-                <option value="2">2 Dice</option>
-                <option value="3">3 Dice</option>
             </select>
         </div>
 
@@ -464,6 +462,23 @@
         const selectedDiceList = document.getElementById('selectedDiceList');
         const selectedDiceText = document.getElementById('selectedDiceText');
         const individualColorSelectors = document.getElementById('individualColorSelectors');
+
+        function initializeDiceCountDropdown(maxCount = 100) {
+            const currentValue = Number.parseInt(diceCountSelect.value, 10);
+            const selectedValue = Number.isFinite(currentValue) && currentValue >= 1 && currentValue <= maxCount
+                ? currentValue
+                : 1;
+
+            diceCountSelect.innerHTML = '';
+
+            for (let count = 1; count <= maxCount; count += 1) {
+                const option = document.createElement('option');
+                option.value = String(count);
+                option.textContent = `${count} ${count === 1 ? 'Die' : 'Dice'}`;
+                option.selected = count === selectedValue;
+                diceCountSelect.appendChild(option);
+            }
+        }
 
         let selectedColor = null;
         let selectedColors = []; // For multiple dice selection
@@ -577,6 +592,8 @@
             renderIndividualColorSelectors(diceCount);
             updateSelectedDiceDisplay();
         });
+
+        initializeDiceCountDropdown(100);
 
         function log(text) {
             const now = new Date();

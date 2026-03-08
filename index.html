@@ -12,24 +12,27 @@
   <link rel="icon" type="image/png" sizes="16x16" href="./src/images/favicon-16x16.png">
 </head>
 
-<body>
+<body class="is-rolling">
   <main class="app-shell">
     <div class="dice-logo">
       <img src="./src/images/logo-new.png" alt="Online Dice logo">
     </div>
 
     <div class="roll-dice-container">
-      <!--<h2>ROLL COLOR DICE</h2>-->
+      <h2 id="sub-title2">ROLL COLOR DICE</h2>
 
       <div class="dropdown-2">
-        <select aria-label="Number of dice">
+        <select id="dice-count-select" aria-label="Number of dice">
           <option value="1" selected>1 DICE</option>
-          <option value="2">2 DICE</option>
-          <option value="3">3 DICE</option>
         </select>
         <select aria-label="Dice type">
+          <option>4-SIDED</option>
+          <option>6-SIDED</option>
+          <option>8-SIDED</option>
+          <option>10-SIDED</option>
+          <option>12-SIDED</option>
+          <option>20-SIDED</option>
           <option selected>COLOR DICE</option>
-          
         </select>
       </div>
 
@@ -224,7 +227,7 @@
   </div>
 
   <script>
-    const diceCountSelect = document.querySelector('.dropdown-2 select:first-child');
+    const diceCountSelect = document.getElementById('dice-count-select');
     const blogButtons = document.querySelectorAll('.blog-btn');
     // const timeKillerButton = document.querySelector('.btn-time');
     const rollAgainButton = document.querySelector('.btn-roll');
@@ -234,7 +237,7 @@
     const overlay = document.querySelector('.roll-overlay');
     const overlayTitle = document.querySelector('.roll-overlay-title');
     const overlayDiceList = document.querySelector('.roll-overlay-dice-list');
-    const rollDelayMs = 800;
+    const rollDelayMs = 1200;
     const loaderTitles = [
       'Fingers Crossed..',
       'What color would it be?',
@@ -287,6 +290,23 @@
       return Number.isFinite(count) && count > 0 ? count : 1;
     }
 
+    function initializeDiceCountOptions(maxCount = 100) {
+      const currentValue = Number.parseInt(diceCountSelect.value, 10);
+      const selectedValue = Number.isFinite(currentValue) && currentValue >= 1 && currentValue <= maxCount
+        ? currentValue
+        : 1;
+
+      diceCountSelect.innerHTML = '';
+
+      for (let count = 1; count <= maxCount; count += 1) {
+        const option = document.createElement('option');
+        option.value = String(count);
+        option.textContent = `${count} DICE`;
+        option.selected = count === selectedValue;
+        diceCountSelect.appendChild(option);
+      }
+    }
+
     function getRandomPreviewColors(count) {
       const colors = [];
 
@@ -322,6 +342,60 @@
 
         dicePreviewsContainer.appendChild(dicePreview);
       }
+
+      syncPreviewLayout();
+    }
+
+    function syncPreviewLayout() {
+      const isMobileView = window.innerWidth <= 780;
+      const isTabletView = window.innerWidth > 780 && window.innerWidth <= 1024;
+      const diceCount = getSelectedDiceCount();
+
+      if (isMobileView) {
+        const mobileColumns = diceCount <= 3 ? diceCount : 4;
+        const cellSize = 80; // 64 inner + 8px border * 2
+        const gap = 12;
+        const rowWidth = (mobileColumns * cellSize) + ((mobileColumns - 1) * gap);
+        const availableWidth = Math.max(220, window.innerWidth - 24);
+
+        dicePreviewsContainer.style.display = 'flex';
+        dicePreviewsContainer.style.width = `${rowWidth}px`;
+        dicePreviewsContainer.style.maxWidth = `${availableWidth}px`;
+        dicePreviewsContainer.style.flexWrap = 'wrap';
+        dicePreviewsContainer.style.justifyContent = 'center';
+        dicePreviewsContainer.style.alignItems = 'center';
+        dicePreviewsContainer.style.gap = '12px';
+        return;
+      }
+
+      if (isTabletView) {
+        const tabletColumns = diceCount < 7 ? diceCount : 6;
+        const cellSize = 80; // 64 inner + 8px border * 2
+        const gap = 12;
+        const rowWidth = (tabletColumns * cellSize) + ((tabletColumns - 1) * gap);
+        const availableWidth = Math.max(320, window.innerWidth - 36);
+
+        dicePreviewsContainer.style.display = 'flex';
+        dicePreviewsContainer.style.width = `${rowWidth}px`;
+        dicePreviewsContainer.style.maxWidth = `${availableWidth}px`;
+        dicePreviewsContainer.style.flexWrap = 'wrap';
+        dicePreviewsContainer.style.gridTemplateColumns = 'none';
+        dicePreviewsContainer.style.justifyContent = 'center';
+        dicePreviewsContainer.style.justifyItems = '';
+        dicePreviewsContainer.style.alignItems = 'center';
+        dicePreviewsContainer.style.gap = `${gap}px`;
+        return;
+      }
+
+      dicePreviewsContainer.style.display = 'flex';
+      dicePreviewsContainer.style.width = '';
+      dicePreviewsContainer.style.maxWidth = '';
+      dicePreviewsContainer.style.flexWrap = 'wrap';
+      dicePreviewsContainer.style.gridTemplateColumns = 'none';
+      dicePreviewsContainer.style.justifyContent = 'center';
+      dicePreviewsContainer.style.justifyItems = '';
+      dicePreviewsContainer.style.alignItems = 'center';
+      dicePreviewsContainer.style.gap = '12px';
     }
 
     function applyResults(results) {
@@ -370,7 +444,54 @@
     }
 
     function syncOverlayDiceLayout(count) {
-      const isMobileView = window.innerWidth <= 780;
+      const overlayDiceItems = overlayDiceList.querySelectorAll('.roll-overlay-dice');
+
+      overlayDiceItems.forEach((diceItem) => {
+        diceItem.style.width = '';
+        diceItem.style.height = '';
+        diceItem.style.borderWidth = '';
+        diceItem.style.borderRadius = '';
+        diceItem.style.gridColumn = '';
+      });
+
+      // Use the same centered 16-per-row animation layout for all dice counts.
+      if (count >= 1) {
+        const gap = 12;
+        const previewWidth = Math.max(
+          220,
+          Math.floor(dicePreviewsContainer.getBoundingClientRect().width || dicePreviewsContainer.clientWidth || 0)
+        );
+        const previewOuterSize = 80; // 64 inner + 8px border on each side
+        const previewInnerSize = 64;
+        const previewBorderSize = 8;
+        const previewRadius = 12;
+        const fittedColumns = Math.max(1, Math.floor((previewWidth + gap) / (previewOuterSize + gap)));
+        const columns = Math.max(1, Math.min(count, fittedColumns));
+        const cellSize = previewOuterSize;
+        const borderWidth = previewBorderSize;
+        const innerSize = previewInnerSize;
+        const borderRadius = previewRadius;
+
+        overlayDiceItems.forEach((diceItem) => {
+          diceItem.style.width = `${innerSize}px`;
+          diceItem.style.height = `${innerSize}px`;
+          diceItem.style.borderWidth = `${borderWidth}px`;
+          diceItem.style.borderRadius = `${borderRadius}px`;
+        });
+
+        const rowWidth = (columns * cellSize) + ((columns - 1) * gap);
+
+        overlayDiceList.style.display = 'flex';
+        overlayDiceList.style.width = `${rowWidth}px`;
+        overlayDiceList.style.maxWidth = `${previewWidth}px`;
+        overlayDiceList.style.flexWrap = 'wrap';
+        overlayDiceList.style.justifyContent = 'center';
+        overlayDiceList.style.gap = `${gap}px`;
+        overlayDiceList.style.justifyItems = 'center';
+        overlayDiceList.style.alignItems = 'center';
+
+        return;
+      }
 
       if (isMobileView && count === 3) {
         overlayDiceList.style.display = 'grid';
@@ -383,7 +504,10 @@
       }
 
       overlayDiceList.style.display = 'flex';
+      overlayDiceList.style.width = '';
+      overlayDiceList.style.maxWidth = '';
       overlayDiceList.style.gridTemplateColumns = 'none';
+      overlayDiceList.style.gridAutoFlow = '';
       overlayDiceList.style.gap = '';
       overlayDiceList.style.justifyItems = '';
       overlayDiceList.style.alignItems = '';
@@ -411,6 +535,7 @@
       }
 
       const titleHeight = overlayTitle ? (overlayTitle.getBoundingClientRect().height || 40) : 0;
+
       const minCenterY = topMargin + titleHeight + titleGap + (diceListHeight / 2);
       const maxCenterY = window.innerHeight - topMargin - (diceListHeight / 2);
 
@@ -433,6 +558,7 @@
     }
 
     window.addEventListener('resize', () => {
+      syncPreviewLayout();
       if (overlay.classList.contains('is-visible')) {
         syncOverlayDiceLayout(getSelectedDiceCount());
         syncOverlayPositionToPreview();
@@ -498,6 +624,7 @@
     }
 
     // ── Init ──────────────────────────────────────────────────
+    initializeDiceCountOptions(100);
     const initialDiceCount = getSelectedDiceCount();
     renderDicePreviews(initialDiceCount);
     renderOverlayDice(initialDiceCount);
@@ -505,7 +632,7 @@
     diceCountSelect.addEventListener('change', () => {
       const diceCount = getSelectedDiceCount();
       renderDicePreviews(diceCount);
-      renderOverlayDice(diceCount);
+      showGoodLuckOverlay();
     });
 
     blogButtons.forEach((button) => {
@@ -522,6 +649,9 @@
     // });
 
     rollAgainButton.addEventListener('click', showGoodLuckOverlay);
+
+    // Start in roll-play mode immediately on page load to avoid showing logo/content first.
+    window.requestAnimationFrame(showGoodLuckOverlay);
   </script>
 </body>
 
