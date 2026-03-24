@@ -312,6 +312,111 @@
             margin-top: 10px;
         }
 
+        .last-roll-containers {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .last-roll-container {
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.18);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+
+        .last-roll-container.has-result {
+            border-color: rgba(255, 215, 0, 0.5);
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .last-roll-container.is-upcoming {
+            border-color: rgba(34, 197, 94, 0.6);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .last-roll-container-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #facc15;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .last-roll-container.is-upcoming .last-roll-container-title {
+            color: #22c55e;
+        }
+
+        .last-roll-container-title .dice-icon {
+            font-size: 18px;
+        }
+
+        .last-roll-waiting {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+            padding: 8px 0;
+        }
+
+        .last-roll-timestamp {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 8px;
+        }
+
+        .dice-group-section {
+            margin-bottom: 20px;
+        }
+
+        .dice-group-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: -1px -1px 0 #0a79ea, 1px -1px 0 #0a79ea, -1px 1px 0 #0a79ea, 1px 1px 0 #0a79ea;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .pre-roll-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .pre-roll-item {
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pre-roll-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pre-roll-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .pre-roll-summary {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 8px;
+        }
+
         .no-roll-yet {
             font-size: 16px;
             color: rgba(255, 255, 255, 0.5);
@@ -406,14 +511,71 @@
             <span class="current-rig" id="currentRig"></span>
         </div>
 
-        <p class="section-label">LAST ROLL RESULT</p>
+        <p class="section-label">DICE RESULTS — 3 DICE</p>
         <div class="roll-result-section">
-            <div class="roll-result-box" id="rollResultBox">
-                <p class="no-roll-yet" id="noRollYet">Waiting for player to roll...</p>
-                <div class="dice-preview-list" id="dicePreviewList" style="display:none;"></div>
-                <p class="roll-result-text" id="rollResultText" style="display:none;"></p>
-                <p class="roll-result-label" id="rollResultLabel" style="display:none;"></p>
-                <p class="roll-result-summary" id="rollResultSummary" style="display:none;"></p>
+            <div class="roll-result-box">
+                <div class="last-roll-containers">
+                    <!-- 3 Dice: Upcoming -->
+                    <div class="last-roll-container is-upcoming" id="nextRoll3Container">
+                        <div class="last-roll-container-title">
+                            <span class="dice-icon">🔮</span> 3 DICE — UPCOMING RESULT
+                        </div>
+                        <p class="last-roll-waiting" id="nextRoll3Waiting">Generating...</p>
+                        <div class="dice-preview-list" id="nextRoll3DiceList" style="display:none;"></div>
+                        <p class="roll-result-text" id="nextRoll3Text" style="display:none;"></p>
+                        <p class="roll-result-summary" id="nextRoll3Summary" style="display:none;"></p>
+                    </div>
+                    <!-- 3 Dice: Last Result -->
+                    <div class="last-roll-container" id="lastRoll3Container">
+                        <div class="last-roll-container-title">
+                            <span class="dice-icon">🎲</span> 3 DICE — LAST RESULT
+                        </div>
+                        <p class="last-roll-waiting" id="lastRoll3Waiting">No roll yet</p>
+                        <div class="dice-preview-list" id="lastRoll3DiceList" style="display:none;"></div>
+                        <p class="roll-result-text" id="lastRoll3Text" style="display:none;"></p>
+                        <p class="roll-result-summary" id="lastRoll3Summary" style="display:none;"></p>
+                        <p class="last-roll-timestamp" id="lastRoll3Time"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label">DICE RESULTS — 30 DICE</p>
+        <div class="roll-result-section">
+            <div class="roll-result-box">
+                <div class="last-roll-containers">
+                    <!-- 30 Dice: Upcoming -->
+                    <div class="last-roll-container is-upcoming" id="nextRoll30Container">
+                        <div class="last-roll-container-title">
+                            <span class="dice-icon">🔮</span> 30 DICE — UPCOMING RESULT
+                        </div>
+                        <p class="last-roll-waiting" id="nextRoll30Waiting">Generating...</p>
+                        <div class="dice-preview-list" id="nextRoll30DiceList" style="display:none;"></div>
+                        <p class="roll-result-text" id="nextRoll30Text" style="display:none;"></p>
+                        <p class="roll-result-summary" id="nextRoll30Summary" style="display:none;"></p>
+                    </div>
+                    <!-- 30 Dice: Last Result -->
+                    <div class="last-roll-container" id="lastRoll30Container">
+                        <div class="last-roll-container-title">
+                            <span class="dice-icon">🎲</span> 30 DICE — LAST RESULT
+                        </div>
+                        <p class="last-roll-waiting" id="lastRoll30Waiting">No roll yet</p>
+                        <div class="dice-preview-list" id="lastRoll30DiceList" style="display:none;"></div>
+                        <p class="roll-result-text" id="lastRoll30Text" style="display:none;"></p>
+                        <p class="roll-result-summary" id="lastRoll30Summary" style="display:none;"></p>
+                        <p class="last-roll-timestamp" id="lastRoll30Time"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- General roll result for other dice counts -->
+        <div class="roll-result-section" id="generalRollResult" style="display:none;">
+            <div class="roll-result-box" style="text-align:center;">
+                <div class="dice-preview-list" id="dicePreviewList"></div>
+                <p class="roll-result-text" id="rollResultText"></p>
+                <p class="roll-result-label" id="rollResultLabel"></p>
+                <p class="roll-result-summary" id="rollResultSummary"></p>
             </div>
         </div>
 
@@ -478,7 +640,32 @@
         const selectedDiceText = document.getElementById('selectedDiceText');
         const selectedDiceSummary = document.getElementById('selectedDiceSummary');
         const individualColorSelectors = document.getElementById('individualColorSelectors');
-        const noRollYet = document.getElementById('noRollYet');
+        // 3-dice upcoming result elements
+        const nextRoll3Waiting = document.getElementById('nextRoll3Waiting');
+        const nextRoll3DiceList = document.getElementById('nextRoll3DiceList');
+        const nextRoll3Text = document.getElementById('nextRoll3Text');
+        const nextRoll3Summary = document.getElementById('nextRoll3Summary');
+        // 30-dice upcoming result elements
+        const nextRoll30Waiting = document.getElementById('nextRoll30Waiting');
+        const nextRoll30DiceList = document.getElementById('nextRoll30DiceList');
+        const nextRoll30Text = document.getElementById('nextRoll30Text');
+        const nextRoll30Summary = document.getElementById('nextRoll30Summary');
+        // 3-dice last roll elements
+        const lastRoll3Container = document.getElementById('lastRoll3Container');
+        const lastRoll3Waiting = document.getElementById('lastRoll3Waiting');
+        const lastRoll3DiceList = document.getElementById('lastRoll3DiceList');
+        const lastRoll3Text = document.getElementById('lastRoll3Text');
+        const lastRoll3Summary = document.getElementById('lastRoll3Summary');
+        const lastRoll3Time = document.getElementById('lastRoll3Time');
+        // 30-dice last roll elements
+        const lastRoll30Container = document.getElementById('lastRoll30Container');
+        const lastRoll30Waiting = document.getElementById('lastRoll30Waiting');
+        const lastRoll30DiceList = document.getElementById('lastRoll30DiceList');
+        const lastRoll30Text = document.getElementById('lastRoll30Text');
+        const lastRoll30Summary = document.getElementById('lastRoll30Summary');
+        const lastRoll30Time = document.getElementById('lastRoll30Time');
+        // General roll result elements
+        const generalRollResult = document.getElementById('generalRollResult');
         const dicePreviewList = document.getElementById('dicePreviewList');
         const rollResultText = document.getElementById('rollResultText');
         const rollResultLabel = document.getElementById('rollResultLabel');
@@ -515,6 +702,8 @@
             'PURPLE': 'rgb(128, 0, 128)'
         };
 
+        const diceColorNames = Object.keys(diceColors);
+
         function buildSummary(colorNames) {
             if (!colorNames || colorNames.length === 0) {
                 return 'Summary: --';
@@ -536,6 +725,88 @@
                 .map(([key, count]) => `${key} x${count}`);
 
             return parts.length ? `Summary: ${parts.join(', ')}` : 'Summary: --';
+        }
+
+        function getRandomColorName() {
+            const index = Math.floor(Math.random() * diceColorNames.length);
+            return diceColorNames[index];
+        }
+
+        function generatePreviewResults(count) {
+            const results = [];
+            for (let i = 0; i < count; i += 1) {
+                const name = getRandomColorName();
+                results.push({ name, value: diceColors[name] });
+            }
+            return results;
+        }
+
+        function renderPreviewResults(results, listEl, textEl, summaryEl) {
+            if (!listEl || !textEl || !summaryEl) return;
+            listEl.innerHTML = '';
+            textEl.innerHTML = '';
+
+            results.forEach((color, index) => {
+                const dice = document.createElement('div');
+                dice.className = 'admin-dice';
+                dice.style.background = color.value;
+                const dot = document.createElement('span');
+                dice.appendChild(dot);
+                listEl.appendChild(dice);
+
+                const span = document.createElement('span');
+                span.textContent = color.name;
+                span.style.color = color.value;
+                textEl.appendChild(span);
+                if (index < results.length - 1) {
+                    textEl.append(', ');
+                }
+            });
+
+            summaryEl.textContent = buildSummary(results.map((result) => result.name));
+        }
+
+        function showPreRollDefaults() {
+            // Upcoming containers start as "Generating..." until server sends data
+            // Last result containers start as "No roll yet"
+        }
+
+        function renderResultIntoContainer(waitingEl, diceListEl, textEl, summaryEl, results) {
+            waitingEl.style.display = 'none';
+            diceListEl.style.display = 'flex';
+            textEl.style.display = 'block';
+            summaryEl.style.display = 'block';
+
+            diceListEl.innerHTML = '';
+            results.forEach(color => {
+                const dice = document.createElement('div');
+                dice.className = 'admin-dice';
+                dice.style.background = color.value;
+                const dot = document.createElement('span');
+                dice.appendChild(dot);
+                diceListEl.appendChild(dice);
+            });
+
+            textEl.innerHTML = '';
+            results.forEach((color, index) => {
+                const span = document.createElement('span');
+                span.textContent = color.name;
+                span.style.color = color.value;
+                textEl.appendChild(span);
+                if (index < results.length - 1) {
+                    textEl.append(', ');
+                }
+            });
+
+            summaryEl.textContent = buildSummary(results.map(r => r.name));
+        }
+
+        function updateUpcomingResult(count, results) {
+            if (count === 3) {
+                renderResultIntoContainer(nextRoll3Waiting, nextRoll3DiceList, nextRoll3Text, nextRoll3Summary, results);
+            } else if (count === 30) {
+                renderResultIntoContainer(nextRoll30Waiting, nextRoll30DiceList, nextRoll30Text, nextRoll30Summary, results);
+            }
         }
 
         function renderIndividualColorSelectors(count) {
@@ -679,6 +950,20 @@
                     } else {
                         currentRig.textContent = 'Random';
                     }
+                    // Load upcoming results from server
+                    if (msg.nextRoll3 && msg.nextRoll3.length > 0) {
+                        updateUpcomingResult(3, msg.nextRoll3);
+                    }
+                    if (msg.nextRoll30 && msg.nextRoll30.length > 0) {
+                        updateUpcomingResult(30, msg.nextRoll30);
+                    }
+                    // Load last roll results from server
+                    if (msg.lastRoll3 && msg.lastRoll3.length > 0) {
+                        updateLastRollContainer(3, msg.lastRoll3, false);
+                    }
+                    if (msg.lastRoll30 && msg.lastRoll30.length > 0) {
+                        updateLastRollContainer(30, msg.lastRoll30, false);
+                    }
                 }
 
                 if (msg.type === 'roll-broadcast') {
@@ -751,14 +1036,51 @@
 
         // ── Roll result display ────────────────────────────────
 
+        function updateLastRollContainer(count, results, isPreview) {
+            let container, waitingEl, diceListEl, textEl, summaryEl, timeEl;
+
+            if (count === 3) {
+                container = lastRoll3Container;
+                waitingEl = lastRoll3Waiting;
+                diceListEl = lastRoll3DiceList;
+                textEl = lastRoll3Text;
+                summaryEl = lastRoll3Summary;
+                timeEl = lastRoll3Time;
+            } else if (count === 30) {
+                container = lastRoll30Container;
+                waitingEl = lastRoll30Waiting;
+                diceListEl = lastRoll30DiceList;
+                textEl = lastRoll30Text;
+                summaryEl = lastRoll30Summary;
+                timeEl = lastRoll30Time;
+            } else {
+                return;
+            }
+
+            renderResultIntoContainer(waitingEl, diceListEl, textEl, summaryEl, results);
+            container.classList.add('has-result');
+
+            if (!isPreview) {
+                const now = new Date();
+                timeEl.textContent = `Last rolled: ${now.toTimeString().slice(0, 8)}`;
+            } else {
+                timeEl.textContent = '';
+            }
+        }
+
         function showRollResult(results, count) {
-            noRollYet.style.display = 'none';
+            // Update the 3 or 30 dice last result container
+            if (count === 3 || count === 30) {
+                updateLastRollContainer(count, results, false);
+            }
+
+            // Also show in general area for any roll count
+            generalRollResult.style.display = 'block';
             dicePreviewList.style.display = 'flex';
             rollResultText.style.display = 'block';
             rollResultLabel.style.display = 'block';
             rollResultSummary.style.display = 'block';
 
-            // Create dice with dots
             dicePreviewList.innerHTML = '';
             results.forEach(color => {
                 const dice = document.createElement('div');
@@ -769,8 +1091,7 @@
                 dicePreviewList.appendChild(dice);
             });
 
-            // Result text - color each word individually
-            rollResultText.innerHTML = ''; // Clear previous content
+            rollResultText.innerHTML = '';
             results.forEach((color, index) => {
                 const span = document.createElement('span');
                 span.textContent = color.name;
@@ -784,6 +1105,7 @@
             rollResultSummary.textContent = buildSummary(results.map(result => result.name));
         }
 
+        showPreRollDefaults();
         connect();
     </script>
 </body>

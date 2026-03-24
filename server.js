@@ -29,11 +29,33 @@ app.get('/admin_temp.html', (_req, res) => {
   res.sendFile(path.join(__dirname, 'admin_temp.html'));
 });
 
+// ── Dice colors ─────────────────────────────────────────────────
+const diceColors = [
+  { name: 'RED', value: 'rgb(255, 0, 0)' },
+  { name: 'ORANGE', value: 'rgb(255, 165, 0)' },
+  { name: 'YELLOW', value: 'rgb(255, 215, 0)' },
+  { name: 'GREEN', value: 'rgb(0, 128, 0)' },
+  { name: 'BLUE', value: '#0049ff' },
+  { name: 'PURPLE', value: 'rgb(128, 0, 128)' }
+];
+
+function generateRandomResults(count) {
+  const results = [];
+  for (let i = 0; i < count; i++) {
+    results.push(diceColors[Math.floor(Math.random() * diceColors.length)]);
+  }
+  return results;
+}
+
 // ── State ────────────────────────────────────────────────────────
-// When riggedColors is set (non-null), the next roll will use these
-// colors instead of random ones. After one roll it resets to null.
 let riggedColors = null;   // null = random,  array of color names = rigged
 let persistRig = false;    // if true, rigged result stays until manually cleared
+let lastRoll3 = null;      // last actual roll result for 3 dice
+let lastRoll30 = null;     // last actual roll result for 30 dice
+
+// Pre-computed next results for 3 and 30 dice (shown to admin in advance)
+let nextRoll3 = generateRandomResults(3);
+let nextRoll30 = generateRandomResults(30);
 
 // ── WebSocket handling ──────────────────────────────────────────
 wss.on('connection', (ws) => {
@@ -50,14 +72,6 @@ wss.on('connection', (ws) => {
     // ── Player requests ────────────────────────────────────────
     if (msg.type === 'roll') {
       const count = Math.min(Math.max(Number(msg.count) || 1, 1), 100);
-      const diceColors = [
-        { name: 'RED', value: 'rgb(255, 0, 0)' },
-        { name: 'ORANGE', value: 'rgb(255, 165, 0)' },
-        { name: 'YELLOW', value: 'rgb(255, 215, 0)' },
-        { name: 'GREEN', value: 'rgb(0, 128, 0)' },
-        { name: 'BLUE', value: '#0049ff' },
-        { name: 'PURPLE', value: 'rgb(128, 0, 128)' }
-      ];
 
       let results;
 
@@ -73,17 +87,27 @@ wss.on('connection', (ws) => {
         // Clear rig after use (unless persist is on)
         if (!persistRig) {
           riggedColors = null;
-          broadcastAdminState();
         }
       } else {
-        // Random roll
-        results = [];
-        for (let i = 0; i < count; i++) {
-          results.push(diceColors[Math.floor(Math.random() * diceColors.length)]);
+        // Use pre-computed result for 3 or 30 dice, random for others
+        if (count === 3) {
+          results = nextRoll3;
+        } else if (count === 30) {
+          results = nextRoll30;
+        } else {
+          results = generateRandomResults(count);
         }
       }
 
       ws.send(JSON.stringify({ type: 'roll-result', results }));
+
+      // Store last roll for 3 and 30 dice
+      if (count === 3) lastRoll3 = results;
+      if (count === 30) lastRoll30 = results;
+
+      // Regenerate next results for 3 and 30 dice
+      if (count === 3) nextRoll3 = generateRandomResults(3);
+      if (count === 30) nextRoll30 = generateRandomResults(30);
 
       // Broadcast to all clients (so admin can see the roll)
       const rollBroadcast = JSON.stringify({ type: 'roll-broadcast', results, count });
@@ -92,6 +116,9 @@ wss.on('connection', (ws) => {
           client.send(rollBroadcast);
         }
       });
+
+      // Broadcast updated next results to admin
+      broadcastAdminState();
     }
 
     // ── Admin requests ─────────────────────────────────────────
@@ -114,7 +141,11 @@ wss.on('connection', (ws) => {
       ws.send(JSON.stringify({
         type: 'admin-state',
         riggedColors,
-        persistRig
+        persistRig,
+        lastRoll3,
+        lastRoll30,
+        nextRoll3,
+        nextRoll30
       }));
     }
   });
@@ -128,7 +159,11 @@ function broadcastAdminState() {
   const stateMsg = JSON.stringify({
     type: 'admin-state',
     riggedColors,
-    persistRig
+    persistRig,
+    lastRoll3,
+    lastRoll30,
+    nextRoll3,
+    nextRoll30
   });
   wss.clients.forEach((client) => {
     if (client.readyState === 1) {

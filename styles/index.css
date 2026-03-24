@@ -242,6 +242,61 @@ body {
   color: goldenrod;
 }
 
+/* Theme overrides for roll overlay */
+.green-theme .roll-overlay,
+.red-theme .roll-overlay,
+.bw-theme .roll-overlay,
+.bronze-theme .roll-overlay,
+.silver-theme .roll-overlay,
+.gold-theme .roll-overlay {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.green-theme .roll-overlay {
+  background-image: url("../src/images/green-bg.png");
+}
+.green-theme .loader-title {
+  text-shadow: -1px -1px 0 green, 1px -1px 0 green, -1px 1px 0 green, 3px 3px 0 green;
+}
+
+.red-theme .roll-overlay {
+  background-image: url("../src/images/red-bg.png");
+}
+.red-theme .loader-title {
+  text-shadow: -1px -1px 0 firebrick, 1px -1px 0 firebrick, -1px 1px 0 firebrick, 3px 3px 0 firebrick;
+}
+
+.bw-theme .roll-overlay {
+  background-image: url("../src/images/b&w-bg.png");
+}
+.bw-theme .loader-title {
+  text-shadow: -1px -1px 0 #666, 1px -1px 0 #666, -1px 1px 0 #666, 3px 3px 0 #666;
+}
+
+.bronze-theme .roll-overlay {
+  background-image: url("../src/images/bronze-bg.png");
+}
+.bronze-theme .loader-title {
+  text-shadow: -1px -1px 0 #a56c43, 1px -1px 0 #a56c43, -1px 1px 0 #a56c43, 3px 3px 0 #a56c43;
+}
+
+.silver-theme .roll-overlay {
+  background-image: url("../src/images/silver-bg.png");
+}
+.silver-theme .loader-title {
+  text-shadow: -1px -1px 0 #999, 1px -1px 0 #999, -1px 1px 0 #999, 3px 3px 0 #999;
+}
+
+.gold-theme .roll-overlay {
+  background-image: url("../src/images/gold-bg.png");
+}
+.gold-theme .loader-title {
+  text-shadow: -1px -1px 0 goldenrod, 1px -1px 0 goldenrod, -1px 1px 0 goldenrod, 3px 3px 0 goldenrod;
+}
+
 .info-card p {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
