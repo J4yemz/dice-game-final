@@ -2,7 +2,7 @@
     "name": "color-dice-game",
     "version": "1.0.0",
     "description": "A color dice roller game - roll virtual color dice online",
-    "main": "index.html",
+    "main": "server.js",
     "scripts": {
         "start": "node server.js",
         "dev": "node server.js",

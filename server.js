@@ -9,8 +9,25 @@ const wss = new WebSocketServer({ server });
 
 const PORT = process.env.PORT || 10000;
 
-// Serve static files
-app.use(express.static(path.join(__dirname)));
+// Serve only public assets/pages needed by the app.
+app.use('/styles', express.static(path.join(__dirname, 'styles')));
+app.use('/src', express.static(path.join(__dirname, 'src')));
+
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/index.html', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/admin.html', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/admin_temp.html', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'admin_temp.html'));
+});
 
 // ── State ────────────────────────────────────────────────────────
 // When riggedColors is set (non-null), the next roll will use these

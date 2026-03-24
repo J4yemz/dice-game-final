@@ -331,7 +331,8 @@ body {
   letter-spacing: 1px;
 }
 
-#sub-title2 {
+#sub-title2,
+.sub-title2-lucky {
   text-shadow: -1px -1px 0 #08f, 1px -1px 0 #08f, -1px 1px 0 #08f, 3px 3px 0 #08f;
   letter-spacing: 0.02em;
   padding: 0;
