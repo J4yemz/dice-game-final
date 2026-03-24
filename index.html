@@ -10,9 +10,47 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./src/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./src/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./src/images/favicon-16x16.png">
+  <style>
+    .dropdown-2 select:focus {
+      outline: none;
+    }
+    .result {
+      background: rgba(255, 255, 255, 1);
+      width: calc(100% - 10px);
+      max-width: 300px;
+      margin: 0 auto 10px auto;
+      padding: 10px 0;
+      color: rgb(255, 200, 0);
+      border: 3px solid rgb(255, 200, 0);
+    }
+    h3.result {
+      font-size: 24px;
+      line-height: 1.2em;
+    }
+  </style>
 </head>
 
-<body class="is-rolling">
+<body class="lucky-roll-active">
+  <div class="lucky-roll-screen" id="luckyRollScreen" aria-label="Lucky roll screen">
+    <div class="dice-logo" aria-hidden="true">
+      <img src="./src/images/logo-new.png" alt="Online Dice logo">
+    </div>
+
+    <div class="roll-dice-container">
+      <h2 id="sub-title2">ROLL COLOR DICE</h2>
+
+      <div class="dice-previews" aria-label="Lucky roll placeholder">
+        <img src="./src/images/dice-placeholder.png" alt="Lucky roll dice placeholder" class="dice-placeholder-image">
+      </div>
+
+      <button id="lucky-roll-button" class="btn btn-roll" type="button">LUCKY ROLL !</button>
+
+      <p class="color-list">Possible colors are: <span class="red">Red</span>, <span class="orange">Orange</span>, <span
+          class="yellow">Yellow</span>, <span class="green">Green</span>, <span class="blue">Blue</span> and <span
+          class="purple">Purple</span>.</p>
+    </div>
+  </div>
+
   <main class="app-shell">
     <div class="dice-logo">
       <img src="./src/images/logo-new.png" alt="Online Dice logo">
@@ -34,6 +72,15 @@
           <option>20-SIDED</option>
           <option selected>COLOR DICE</option>
         </select>
+        <select aria-label="Color filter" id="color-filter-select">
+          <option selected>DEFAULT</option>
+          <option>GREEN</option>
+          <option>RED</option>
+          <option>B&W</option>
+          <option>BRONZE</option>
+          <option>SILVER</option>
+          <option>GOLD</option>
+        </select>
       </div>
 
       <div class="dice-previews" aria-label="Current dice colors">
@@ -42,9 +89,7 @@
         </div>
       </div>
 
-      <!-- <p class="result">RESULT: <strong>BLUE</strong></p> -->
 
-     
       <!-- <button class="btn btn-time" type="button">THE TIME KILLER !</button> -->
       <button id="roll-button" class="btn btn-roll" type="button">ROLL AGAIN !</button>
 
@@ -55,7 +100,7 @@
 
     <section class="info-section" aria-label="Virtual dice information">
       <article class="info-card">
-        <h3 class="title-card">HOW DO THESE VIRTUAL DICE WORK?</h3>
+        <h3 class="title-card section-title">HOW DO THESE VIRTUAL DICE WORK?</h3>
         <p>This website uses virtual dice created with an algorithm that assigns equal probabilities to every possible
           outcome. By clicking on the "Roll Again" button you can re-roll all the dice on this page.</p>
         <p>This page allows you to choose any number of dice between 1 and 100, each having 6 sides and 6 possible
@@ -64,7 +109,7 @@
       </article>
 
       <article class="info-card">
-        <h3>ABOUT US</h3>
+        <h3 class="section-title">ABOUT US</h3>
         <p>Online-Dice.com is an online dice simulator that anyone can use to roll virtual dice when no real dice are
           available. With this free simulator you can roll dice for online games, board games, or any other game of
           chance.</p>
@@ -72,7 +117,7 @@
     </section>
 
     <section class="blog-section" aria-label="Blog posts">
-      <h3>BLOG POSTS</h3>
+      <h3 class="section-title">BLOG POSTS</h3>
 
       <article class="blog-card">
         <h4>THE HISTORY OF DICE AND DICE GAMES</h4>
@@ -228,12 +273,17 @@
 
   <script>
     const diceCountSelect = document.getElementById('dice-count-select');
+    const diceTypeSelect = document.querySelector('select[aria-label="Dice type"]');
+    const colorFilterSelect = document.getElementById('color-filter-select');
     const blogButtons = document.querySelectorAll('.blog-btn');
     // const timeKillerButton = document.querySelector('.btn-time');
-    const rollAgainButton = document.querySelector('.btn-roll');
-    const resultContainer = document.querySelector('.roll-dice-container');
-    const resultValue = document.querySelector('.result strong');
-    const dicePreviewsContainer = document.querySelector('.dice-previews');
+    const rollAgainButton = document.getElementById('roll-button');
+    const luckyRollButton = document.getElementById('lucky-roll-button');
+    const resultContainer = document.querySelector('main .roll-dice-container');
+    const infoCards = document.querySelectorAll('article.info-card');
+    const blogCards = document.querySelectorAll('article.blog-card');
+    const resultValue = document.getElementById('actual-result-value');
+    const dicePreviewsContainer = document.querySelector('main .dice-previews');
     const overlay = document.querySelector('.roll-overlay');
     const overlayTitle = document.querySelector('.roll-overlay-title');
     const overlayDiceList = document.querySelector('.roll-overlay-dice-list');
@@ -635,6 +685,69 @@
       showGoodLuckOverlay();
     });
 
+    colorFilterSelect.addEventListener('change', () => {
+      // Reset the container background by default
+      resultContainer.style.background = '';
+      infoCards.forEach((card) => {
+        card.style.background = '';
+      });
+      blogCards.forEach((card) => {
+        card.style.background = '';
+      });
+      diceCountSelect.style.border = '';
+      if (diceTypeSelect) diceTypeSelect.style.border = '';
+      colorFilterSelect.style.border = '';
+
+      const selectedValue = colorFilterSelect.value;
+      const panelBackground = 'rgba(0, 0, 0, 0.15)';
+      const bwCardBackground = 'rgba(0, 0, 0, 0.9)';
+      const needsPanelBackground = ['GREEN', 'RED', 'B&W', 'BRONZE', 'SILVER'].includes(selectedValue);
+
+      document.body.classList.toggle('green-theme', selectedValue === 'GREEN');
+      document.body.classList.toggle('red-theme', selectedValue === 'RED');
+      document.body.classList.toggle('bw-theme', selectedValue === 'B&W');
+      document.body.classList.toggle('bronze-theme', selectedValue === 'BRONZE');
+      document.body.classList.toggle('silver-theme', selectedValue === 'SILVER');
+      document.body.classList.toggle('gold-theme', selectedValue === 'GOLD');
+
+      if (selectedValue === 'GREEN') {
+        document.body.style.background = "url('./src/images/green-bg.png') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+        diceCountSelect.style.border = '3px solid green';
+        if (diceTypeSelect) diceTypeSelect.style.border = '3px solid green';
+        colorFilterSelect.style.border = '3px solid green';
+      } else if (selectedValue === 'RED') {
+        document.body.style.background = "url('./src/images/red-bg.png') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+      } else if (selectedValue === 'B&W') {
+         document.body.style.background = "url('./src/images/b&w-bg.png') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+      } else if (selectedValue === 'BRONZE') {
+        document.body.style.background = "url('./src/images/bronze-bg.png') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+      } else if (selectedValue === 'SILVER') {
+        document.body.style.background = "url('./src/images/silver-bg.png') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+      } else if (selectedValue === 'GOLD') {
+        document.body.style.background = "url('./src/images/gold-bg.png') no-repeat center center fixed";
+        document.body.style.backgroundSize = "cover";
+      } else {
+        document.body.style.background = '';
+        document.body.style.backgroundSize = '';
+      }
+
+      if (needsPanelBackground) {
+        resultContainer.style.background = panelBackground;
+        const cardBackground = selectedValue === 'B&W' ? bwCardBackground : panelBackground;
+        infoCards.forEach((card) => {
+          card.style.background = cardBackground;
+        });
+        blogCards.forEach((card) => {
+          card.style.background = cardBackground;
+        });
+      }
+    });
+
     blogButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const targetUrl = button.dataset.url;
@@ -650,8 +763,14 @@
 
     rollAgainButton.addEventListener('click', showGoodLuckOverlay);
 
-    // Start in roll-play mode immediately on page load to avoid showing logo/content first.
-    window.requestAnimationFrame(showGoodLuckOverlay);
+    if (luckyRollButton) {
+      luckyRollButton.addEventListener('click', () => {
+        document.body.classList.remove('lucky-roll-active');
+        showGoodLuckOverlay();
+      });
+    }
+
+    // Wait until the lucky roll screen is dismissed.
   </script>
 </body>
 

@@ -34,6 +34,31 @@ body {
   box-sizing: border-box;
 }
 
+.lucky-roll-screen {
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 45px 24px 30px;
+  box-sizing: border-box;
+}
+
+.lucky-roll-active .lucky-roll-screen {
+  display: flex;
+}
+
+.lucky-roll-screen .roll-dice-container {
+  margin: 0 auto;
+}
+
+.lucky-roll-active .app-shell,
+.lucky-roll-active .site-footer {
+  display: none;
+}
+
 .dice-logo {
   display: flex;
   justify-content: center;
@@ -131,6 +156,90 @@ body {
   line-height: 1;
   letter-spacing: 1px;
   text-shadow: -1px -1px 0 #08f, 1px -1px 0 #08f, -1px 1px 0 #08f, 3px 3px 0 #08f;
+}
+
+.section-title {
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+
+.green-theme .section-title {
+  text-shadow: -1px -1px 0 green, 1px -1px 0 green, -1px 1px 0 green, 3px 3px 0 green;
+}
+
+.red-theme .section-title {
+  text-shadow: -1px -1px 0 firebrick, 1px -1px 0 firebrick, -1px 1px 0 firebrick, 3px 3px 0 firebrick;
+}
+
+.red-theme #sub-title2 {
+  text-shadow: -1px -1px 0 firebrick, 1px -1px 0 firebrick, -1px 1px 0 firebrick, 3px 3px 0 firebrick;
+}
+
+.red-theme #dice-count-select,
+.red-theme select[aria-label="Dice type"],
+.red-theme #color-filter-select {
+  border-color: firebrick;
+  color: firebrick;
+}
+
+.bw-theme .section-title {
+  text-shadow: -1px -1px 0 #666, 1px -1px 0 #666, -1px 1px 0 #666, 3px 3px 0 #666;
+}
+
+.bw-theme #sub-title2 {
+  text-shadow: -1px -1px 0 #222, 1px -1px 0 #222, -1px 1px 0 #222, 3px 3px 0 #222;
+}
+
+.bw-theme #dice-count-select,
+.bw-theme select[aria-label="Dice type"],
+.bw-theme #color-filter-select {
+  border-color: #222;
+  color: #222;
+}
+
+.bronze-theme .section-title {
+  text-shadow: -1px -1px 0 #a56c43, 1px -1px 0 #a56c43, -1px 1px 0 #a56c43, 3px 3px 0 #a56c43;
+}
+
+.bronze-theme #sub-title2 {
+  text-shadow: -1px -1px 0 #a56c43, 1px -1px 0 #a56c43, -1px 1px 0 #a56c43, 3px 3px 0 #a56c43;
+}
+
+.bronze-theme #dice-count-select,
+.bronze-theme select[aria-label="Dice type"],
+.bronze-theme #color-filter-select {
+  border-color: #a56c43;
+  color: #a56c43;
+}
+
+.silver-theme .section-title {
+  text-shadow: -1px -1px 0 #999, 1px -1px 0 #999, -1px 1px 0 #999, 3px 3px 0 #999;
+}
+
+.silver-theme #sub-title2 {
+  text-shadow: -1px -1px 0 #999, 1px -1px 0 #999, -1px 1px 0 #999, 3px 3px 0 #999;
+}
+
+.silver-theme #dice-count-select,
+.silver-theme select[aria-label="Dice type"],
+.silver-theme #color-filter-select {
+  border-color: #999;
+  color: #999;
+}
+
+.gold-theme .section-title {
+  text-shadow: -1px -1px 0 goldenrod, 1px -1px 0 goldenrod, -1px 1px 0 goldenrod, 3px 3px 0 goldenrod;
+}
+
+.gold-theme #sub-title2 {
+  text-shadow: -1px -1px 0 goldenrod, 1px -1px 0 goldenrod, -1px 1px 0 goldenrod, 3px 3px 0 goldenrod;
+}
+
+.gold-theme #dice-count-select,
+.gold-theme select[aria-label="Dice type"],
+.gold-theme #color-filter-select {
+  border-color: goldenrod;
+  color: goldenrod;
 }
 
 .info-card p {
@@ -350,6 +459,13 @@ body {
   flex-wrap: wrap;
 }
 
+.dice-placeholder-image {
+  width: calc(var(--dice-size) + (var(--dice-border) * 2));
+  height: calc(var(--dice-size) + (var(--dice-border) * 2));
+  object-fit: contain;
+  display: block;
+}
+
 .dice-preview {
   width: var(--dice-size);
   height: var(--dice-size);
@@ -407,7 +523,8 @@ body {
   color: #ffffff;
 }
 
-#roll-button {
+#roll-button,
+#lucky-roll-button {
   width: calc(100% - 10px);
   box-sizing: border-box;
   font-size: 22px;
@@ -425,7 +542,8 @@ body {
   transition: 0.1s;
 }
 
-#roll-button:hover {
+#roll-button:hover,
+#lucky-roll-button:hover {
   background-size: auto 200%;
   background-position: bottom center;
 }
@@ -663,7 +781,8 @@ body.is-rolling .site-footer {
     padding: 0 12px;
   }
 
-  #roll-button {
+  #roll-button,
+  #lucky-roll-button {
     font-size: 20px;
     padding: 11px 0;
   }
@@ -849,7 +968,8 @@ body.is-rolling .site-footer {
     flex: initial;
   }
 
-  #roll-button {
+  #roll-button,
+  #lucky-roll-button {
     font-size: 18px;
     padding: 10px 0;
   }

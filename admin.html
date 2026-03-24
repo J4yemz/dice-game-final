@@ -21,7 +21,7 @@
         body {
             min-height: 100vh;
             font-family: "DiceFont", sans-serif;
-            background-image: url("./src/images/background.jpg");
+            background-image: url("./src/images/green-bg.png");
             background-size: auto;
             background-position: top left;
             background-repeat: repeat;
@@ -306,6 +306,12 @@
             margin-top: 6px;
         }
 
+        .roll-result-summary {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 10px;
+        }
+
         .no-roll-yet {
             font-size: 16px;
             color: rgba(255, 255, 255, 0.5);
@@ -342,6 +348,13 @@
             font-size: 16px;
             color: #ffffff;
             margin-top: 12px;
+            margin-bottom: 0;
+        }
+
+        .selected-dice-summary {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 8px;
             margin-bottom: 0;
         }
 
@@ -400,6 +413,7 @@
                 <div class="dice-preview-list" id="dicePreviewList" style="display:none;"></div>
                 <p class="roll-result-text" id="rollResultText" style="display:none;"></p>
                 <p class="roll-result-label" id="rollResultLabel" style="display:none;"></p>
+                <p class="roll-result-summary" id="rollResultSummary" style="display:none;"></p>
             </div>
         </div>
 
@@ -429,6 +443,7 @@
         <div class="selected-dice-display" id="selectedDiceDisplay">
             <div class="dice-preview-list" id="selectedDiceList"></div>
             <p class="selected-dice-text" id="selectedDiceText">No colors selected</p>
+            <p class="selected-dice-summary" id="selectedDiceSummary">Summary: --</p>
         </div>
 
         <div class="options">
@@ -461,7 +476,13 @@
         const diceCountSelect = document.getElementById('diceCountSelect');
         const selectedDiceList = document.getElementById('selectedDiceList');
         const selectedDiceText = document.getElementById('selectedDiceText');
+        const selectedDiceSummary = document.getElementById('selectedDiceSummary');
         const individualColorSelectors = document.getElementById('individualColorSelectors');
+        const noRollYet = document.getElementById('noRollYet');
+        const dicePreviewList = document.getElementById('dicePreviewList');
+        const rollResultText = document.getElementById('rollResultText');
+        const rollResultLabel = document.getElementById('rollResultLabel');
+        const rollResultSummary = document.getElementById('rollResultSummary');
 
         function initializeDiceCountDropdown(maxCount = 100) {
             const currentValue = Number.parseInt(diceCountSelect.value, 10);
@@ -493,6 +514,29 @@
             'BLUE': '#0049ff',
             'PURPLE': 'rgb(128, 0, 128)'
         };
+
+        function buildSummary(colorNames) {
+            if (!colorNames || colorNames.length === 0) {
+                return 'Summary: --';
+            }
+
+            const counts = {};
+            colorNames.forEach((name) => {
+                const key = String(name || '').toUpperCase();
+                if (!key) return;
+                counts[key] = (counts[key] || 0) + 1;
+            });
+
+            const parts = Object.entries(counts)
+                .sort((a, b) => {
+                    const countDiff = b[1] - a[1];
+                    if (countDiff !== 0) return countDiff;
+                    return a[0].localeCompare(b[0]);
+                })
+                .map(([key, count]) => `${key} x${count}`);
+
+            return parts.length ? `Summary: ${parts.join(', ')}` : 'Summary: --';
+        }
 
         function renderIndividualColorSelectors(count) {
             individualColorSelectors.innerHTML = '';
@@ -552,6 +596,7 @@
                 }
                 
                 selectedDiceText.textContent = `1 die: ${selectedColor}`;
+                selectedDiceSummary.textContent = buildSummary([selectedColor]);
                 applyBtn.disabled = false;
             } else if (diceCount > 1) {
                 // Multiple dice with individual color selection
@@ -576,13 +621,16 @@
                 
                 if (allSelected && selectedColors.length === diceCount) {
                     selectedDiceText.textContent = `${diceCount} dice: ${selectedColors.join(', ')}`;
+                    selectedDiceSummary.textContent = buildSummary(selectedColors);
                     applyBtn.disabled = false;
                 } else {
                     selectedDiceText.textContent = 'Please select colors for all dice';
+                    selectedDiceSummary.textContent = 'Summary: --';
                     applyBtn.disabled = true;
                 }
             } else {
                 selectedDiceText.textContent = 'No colors selected';
+                selectedDiceSummary.textContent = 'Summary: --';
                 applyBtn.disabled = true;
             }
         }
@@ -708,6 +756,7 @@
             dicePreviewList.style.display = 'flex';
             rollResultText.style.display = 'block';
             rollResultLabel.style.display = 'block';
+            rollResultSummary.style.display = 'block';
 
             // Create dice with dots
             dicePreviewList.innerHTML = '';
@@ -732,6 +781,7 @@
                 }
             });
             rollResultLabel.textContent = `${count} ${count === 1 ? 'die' : 'dice'} rolled`;
+            rollResultSummary.textContent = buildSummary(results.map(result => result.name));
         }
 
         connect();
