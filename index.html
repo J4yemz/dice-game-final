@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roll Color Dice, 3-sided Color Dice – Online Dice</title>
   <link rel="stylesheet" href="./styles/index.css">
-  
+
   <link rel="apple-touch-icon" sizes="180x180" href="./src/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./src/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./src/images/favicon-16x16.png">
@@ -14,6 +14,7 @@
     .dropdown-2 select:focus {
       outline: none;
     }
+
     .result {
       background: rgba(255, 255, 255, 1);
       width: calc(100% - 10px);
@@ -23,6 +24,7 @@
       color: rgb(255, 200, 0);
       border: 3px solid rgb(255, 200, 0);
     }
+
     h3.result {
       font-size: 24px;
       line-height: 1.2em;
@@ -73,13 +75,13 @@
           <option selected>COLOR DICE</option>
         </select>
         <select aria-label="Color filter" id="color-filter-select">
-          <option style="color: #1389f6;" selected>DEFAULT</option>
-          <option style="color: green;">GREEN</option>
-          <option style="color: firebrick;">RED</option>
-          <option style="color: #222;">B&W</option>
-          <option style="color: #a56c43;">BRONZE</option>
-          <option style="color: #999;">SILVER</option>
-          <option style="color: goldenrod;">GOLD</option>
+          <option value="DEFAULT" style="color: #1389f6;" selected>DEFAULT</option>
+          <option value="GREEN" style="color: green;">GREEN</option>
+          <option value="RED" style="color: firebrick;">RED</option>
+          <option value="B&W" style="color: #222;">B&W</option>
+          <option value="BRONZE" style="color: #a56c43;">BRONZE</option>
+          <option value="SILVER" style="color: #999;">SILVER</option>
+          <option value="GOLD" style="color: goldenrod;">GOLD</option>
         </select>
       </div>
 
@@ -105,7 +107,8 @@
           outcome. By clicking on the "Roll Again" button you can re-roll all the dice on this page.</p>
         <p>This page allows you to choose any number of dice between 1 and 100, each having 6 sides and 6 possible
           colors: <span class="red">Red</span>, <span class="orange">Orange</span>, <span class="yellow">Yellow</span>,
-          <span class="green">Green</span>, <span class="blue">Blue</span> and <span class="purple">Purple</span>.</p>
+          <span class="green">Green</span>, <span class="blue">Blue</span> and <span class="purple">Purple</span>.
+        </p>
       </article>
 
       <article class="info-card">
@@ -287,7 +290,7 @@
     const overlay = document.querySelector('.roll-overlay');
     const overlayTitle = document.querySelector('.roll-overlay-title');
     const overlayDiceList = document.querySelector('.roll-overlay-dice-list');
-    const rollDelayMs = 1200;
+    const rollDelayMs = 1100;
     const loaderTitles = [
       'Fingers Crossed..',
       'What color would it be?',
@@ -295,6 +298,37 @@
       'Good luck!',
       "Let's roll!"
     ];
+
+    let totalRollCount = parseInt(localStorage.getItem('diceGameTotalRolls') || '0', 10);
+
+    function updateColorFilterUnlocks() {
+      const unlocks = [
+        { value: 'DEFAULT', req: 0 },
+        { value: 'GREEN', req: 9 },
+        { value: 'RED', req: 18 },
+        { value: 'B&W', req: 27 },
+        { value: 'BRONZE', req: 36 },
+        { value: 'SILVER', req: 45 },
+        { value: 'GOLD', req: 54 }
+      ];
+
+      if (colorFilterSelect) {
+        for (let i = 0; i < colorFilterSelect.options.length; i++) {
+          const option = colorFilterSelect.options[i];
+          const unlockInfo = unlocks.find((u) => u.value === option.value);
+          if (unlockInfo) {
+            if (totalRollCount >= unlockInfo.req) {
+              option.disabled = false;
+              option.textContent = unlockInfo.value;
+            } else {
+              option.disabled = true;
+              const remaining = unlockInfo.req - totalRollCount;
+              option.textContent = `${unlockInfo.value} (unlock with ${remaining} roll${remaining === 1 ? '' : 's'})`;
+            }
+          }
+        }
+      }
+    }
 
     const diceColors = [
       { name: 'RED', value: 'rgb(255, 0, 0)' },
@@ -462,15 +496,36 @@
           }
         });
       }
-      
-      // Apply colors to each dice preview
-      const dicePreviews = dicePreviewsContainer.querySelectorAll('.dice-preview');
-      results.forEach((color, index) => {
-        if (dicePreviews[index]) {
-          const appliedColor = color.name === 'BLUE' ? '#0000ff' : color.value;
-          dicePreviews[index].style.background = appliedColor;
+
+      // Check for 9th roll
+      const isPlaceholderRoll = totalRollCount > 0 && totalRollCount % 9 === 0;
+
+      if (isPlaceholderRoll) {
+        dicePreviewsContainer.innerHTML = '';
+        for (let i = 0; i < results.length; i++) {
+          const img = document.createElement('img');
+          img.src = "./src/images/dice-placeholder.png";
+          img.alt = "Lucky roll dice placeholder";
+          img.className = "dice-placeholder-image";
+          dicePreviewsContainer.appendChild(img);
         }
-      });
+        syncPreviewLayout();
+      } else {
+        // Ensure .dice-previews exist (restore if they were replaced by placeholder)
+        let dicePreviews = dicePreviewsContainer.querySelectorAll('.dice-preview');
+        if (dicePreviews.length !== results.length) {
+          renderDicePreviews(results.length);
+          dicePreviews = dicePreviewsContainer.querySelectorAll('.dice-preview');
+        }
+
+        // Apply colors to each dice preview
+        results.forEach((color, index) => {
+          if (dicePreviews[index]) {
+            const appliedColor = color.name === 'BLUE' ? '#0000ff' : color.value;
+            dicePreviews[index].style.background = appliedColor;
+          }
+        });
+      }
 
       if (animateResultContainer && resultContainer) {
         resultContainer.classList.remove('result-zoom-out');
@@ -662,6 +717,11 @@
       overlay.classList.add('is-visible');
 
       rollColorDice(diceCount, () => {
+        totalRollCount++;
+        localStorage.setItem('diceGameTotalRolls', totalRollCount.toString());
+
+        updateColorFilterUnlocks();
+
         window.setTimeout(() => {
           if (overlayTitle) {
             overlayTitle.style.visibility = 'hidden';
@@ -674,6 +734,7 @@
     }
 
     // ── Init ──────────────────────────────────────────────────
+    updateColorFilterUnlocks();
     initializeDiceCountOptions(100);
     const initialDiceCount = getSelectedDiceCount();
     renderDicePreviews(initialDiceCount);
@@ -720,7 +781,7 @@
         document.body.style.background = "url('./src/images/red-bg.png') no-repeat center center fixed";
         document.body.style.backgroundSize = "cover";
       } else if (selectedValue === 'B&W') {
-         document.body.style.background = "url('./src/images/b&w-bg.png') no-repeat center center fixed";
+        document.body.style.background = "url('./src/images/b&w-bg.png') no-repeat center center fixed";
         document.body.style.backgroundSize = "cover";
       } else if (selectedValue === 'BRONZE') {
         document.body.style.background = "url('./src/images/bronze-bg.png') no-repeat center center fixed";
@@ -771,6 +832,9 @@
     }
 
     // Wait until the lucky roll screen is dismissed.
+
+    // Apply color filter upon initialize
+    colorFilterSelect.dispatchEvent(new Event('change'));
   </script>
 </body>
 
