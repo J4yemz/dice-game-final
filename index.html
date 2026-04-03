@@ -8,6 +8,10 @@
       sessionStorage.setItem('isFromAd', 'true');
       window.location.href = '/security';
     }
+    // When returning from an ad, hide everything so the overlay appears directly
+    if (sessionStorage.getItem('autoRollPending') === 'true') {
+      document.documentElement.style.visibility = 'hidden';
+    }
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -387,7 +391,7 @@
       if (storedDiceCount !== null) {
         currentValue = Number.parseInt(storedDiceCount, 10);
       }
-      
+
       const selectedValue = Number.isFinite(currentValue) && currentValue >= 1 && currentValue <= maxCount
         ? currentValue
         : 1;
@@ -713,7 +717,7 @@
     function showGoodLuckOverlay() {
       const isFromAd = sessionStorage.getItem('isFromAd') === 'true';
       sessionStorage.removeItem('isFromAd'); // clear it immediately
-      
+
       if (!isFromAd && (totalRollCount + 1) % 15 === 0) {
         sessionStorage.setItem('autoRollPending', 'true');
         sessionStorage.setItem('isFromAd', 'true');
@@ -862,9 +866,9 @@
     // Check if we need to auto-roll after returning from an ad
     if (sessionStorage.getItem('autoRollPending') === 'true') {
       sessionStorage.removeItem('autoRollPending');
-      setTimeout(() => {
-        showGoodLuckOverlay();
-      }, 0);
+      // Show the page now that the overlay is about to fire
+      document.documentElement.style.visibility = '';
+      showGoodLuckOverlay();
     }
   </script>
 </body>
