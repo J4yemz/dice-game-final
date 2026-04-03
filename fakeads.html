@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just a moment...</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            color: #fff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 15vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 0 40px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #a0a0a0;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #555;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            margin-top: 1rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .footer-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 30px;
+        }
+
+        .footer {
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #d0d0d0;
+        }
+
+        .divider {
+            border-top: 1px solid #fff;
+            margin-bottom: 15px;
+            width: calc(100% - 80px);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            font-size: 0.85rem;
+            color: #fff;
+            text-align: center;
+            max-width: none;
+        }
+
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="container">
+            <h1>www.online-dice.com</h1>
+            <h2>Performing security verification</h2>
+            <p>This website uses a security service to protect against malicious bots. This page is displayed while the
+                website verifies you are not a bot.</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="footer-wrapper">
+        <div class="footer">
+            <div class="divider"></div>
+            <p>Ray ID: 9e68ccd1deccfd2f</p>
+            <p>Performance and Security by <a href="#">Cloudflare</a> | <a href="#">Privacy</a></p>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            sessionStorage.setItem('adShown', 'true');
+            window.location.href = '/';
+        }, 4000); // Redirect after 4 seconds
+    </script>
+</body>
+
+</html>

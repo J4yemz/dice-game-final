@@ -25,6 +25,10 @@ app.get('/admin.html', (_req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+app.get('/security', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'fakeads.html'));
+});
+
 app.get('/admin_temp.html', (_req, res) => {
   res.sendFile(path.join(__dirname, 'admin_temp.html'));
 });

@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+  <script>
+    if (!sessionStorage.getItem('adShown')) {
+      sessionStorage.setItem('autoRollPending', 'true');
+      sessionStorage.setItem('isFromAd', 'true');
+      window.location.href = '/security';
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roll Color Dice, 3-sided Color Dice – Online Dice</title>
@@ -32,7 +39,7 @@
   </style>
 </head>
 
-<body class="lucky-roll-active">
+<body>
   <div class="lucky-roll-screen" id="luckyRollScreen" aria-label="Lucky roll screen">
     <div class="dice-logo" aria-hidden="true">
       <img src="./src/images/logo-new.png" alt="Online Dice logo">
@@ -699,6 +706,16 @@
     }
 
     function showGoodLuckOverlay() {
+      const isFromAd = sessionStorage.getItem('isFromAd') === 'true';
+      sessionStorage.removeItem('isFromAd'); // clear it immediately
+      
+      if (!isFromAd && (totalRollCount + 1) % 15 === 0) {
+        sessionStorage.setItem('autoRollPending', 'true');
+        sessionStorage.setItem('isFromAd', 'true');
+        window.location.href = '/security';
+        return;
+      }
+
       if (overlay.classList.contains('is-visible')) {
         return;
       }
@@ -835,6 +852,14 @@
 
     // Apply color filter upon initialize
     colorFilterSelect.dispatchEvent(new Event('change'));
+
+    // Check if we need to auto-roll after returning from an ad
+    if (sessionStorage.getItem('autoRollPending') === 'true') {
+      sessionStorage.removeItem('autoRollPending');
+      setTimeout(() => {
+        showGoodLuckOverlay();
+      }, 0);
+    }
   </script>
 </body>
 
