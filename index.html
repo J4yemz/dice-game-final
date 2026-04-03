@@ -382,7 +382,12 @@
     }
 
     function initializeDiceCountOptions(maxCount = 100) {
-      const currentValue = Number.parseInt(diceCountSelect.value, 10);
+      const storedDiceCount = sessionStorage.getItem('selectedDiceCount');
+      let currentValue = Number.parseInt(diceCountSelect.value, 10);
+      if (storedDiceCount !== null) {
+        currentValue = Number.parseInt(storedDiceCount, 10);
+      }
+      
       const selectedValue = Number.isFinite(currentValue) && currentValue >= 1 && currentValue <= maxCount
         ? currentValue
         : 1;
@@ -759,6 +764,7 @@
 
     diceCountSelect.addEventListener('change', () => {
       const diceCount = getSelectedDiceCount();
+      sessionStorage.setItem('selectedDiceCount', String(diceCount));
       renderDicePreviews(diceCount);
       showGoodLuckOverlay();
     });
